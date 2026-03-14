@@ -1,41 +1,69 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# dependencies
+# ========================
+# SECURITY — NEVER COMMIT
+# ========================
+.env
+.env.local
+.env.*.local
+.env.production
+secrets.js
+secrets.json
+*.pem
+*.p12
+*.p8
+*.jks
+*.mobileprovision
+*.keystore
+google-services.json
+GoogleService-Info.plist
+
+# ========================
+# NODE / NPM
+# ========================
 node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+package-lock.json.bak
 
-# Expo
+# ========================
+# EXPO
+# ========================
 .expo/
 dist/
 web-build/
 expo-env.d.ts
+.expo-shared/
 
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
+# ========================
+# METRO
+# ========================
 .metro-health-check*
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
-# generated native folders
+# ========================
+# NATIVE BUILD ARTIFACTS
+# ========================
 /ios
 /android
+.kotlin/
+*.orig.*
+
+# ========================
+# OS FILES
+# ========================
+.DS_Store
+Thumbs.db
+*.pem
+.vscode/settings.json
+
+# ========================
+# TYPESCRIPT
+# ========================
+*.tsbuildinfo
+
+# ========================
+# LOGS
+# ========================
+logs/
+*.log

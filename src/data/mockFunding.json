@@ -1,0 +1,49 @@
+[
+  {
+    "id": "nef",
+    "name": "NEF Black-Owned Enterprise Grant",
+    "org": "National Empowerment Fund",
+    "amount": "R3,000 – R3,500",
+    "logo": "🏦",
+    "color": "#C0392B",
+    "deadline": "July 2027",
+    "category": "Government Grants",
+    "criteria": [
+      "51%+ Black ownership",
+      "SA registered business (CIPC)",
+      "Valid tax clearance certificate",
+      "Enterprise connected with coastal grants"
+    ]
+  },
+  {
+    "id": "idc",
+    "name": "IDC SMME Growth Fund",
+    "org": "Industrial Development Corporation",
+    "amount": "R1M – R75M",
+    "logo": "🏭",
+    "color": "#1565C0",
+    "deadline": "Rolling basis",
+    "category": "Development Finance",
+    "criteria": [
+      "Manufacturing or agro-processing",
+      "SA registered business",
+      "Demonstrated market demand"
+    ]
+  },
+  {
+    "id": "dti",
+    "name": "dti Enterprise Development Grant",
+    "org": "Department of Trade, Industry & Competition",
+    "amount": "R500k – R5M",
+    "logo": "🏛️",
+    "color": "#27AE60",
+    "deadline": "Quarterly",
+    "category": "Government",
+    "criteria": [
+      "SMME with fewer than 200 employees",
+      "Annual turnover under R50M",
+      "BBBEE compliant",
+      "SA registered for minimum 1 year"
+    ]
+  }
+]
