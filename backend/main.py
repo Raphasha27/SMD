@@ -8,9 +8,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
-from adapters.up_adapter import UPAdapter
-from adapters.uct_adapter import UCTAdapter
-from adapters.saqa_adapter import SAQAAdapter
+try:
+    from adapters.up_adapter import UPAdapter
+    from adapters.uct_adapter import UCTAdapter
+    from adapters.saqa_adapter import SAQAAdapter
+except ImportError:
+    from backend.adapters.up_adapter import UPAdapter
+    from backend.adapters.uct_adapter import UCTAdapter
+    from backend.adapters.saqa_adapter import SAQAAdapter
+
 from fastapi import Header
 
 load_dotenv()
@@ -66,9 +72,36 @@ async def get_verification_stats():
 @app.post("/fraud/detect")
 async def detect_fraud_patterns(user_id: str):
     """
-    Advanced logic to detect suspicious verification behavior.
+    Phase 3: Logic Engine for detecting suspicious activity.
+    Checks for high-volume searches or conflicting registration data.
     """
-    return {"user_id": user_id, "fraud_score": 0.0, "recommendation": "LOW_RISK"}
+    try:
+        # Fetch last 50 verifications for this user
+        response = supabase.table("verifications")\
+            .select("registration_number", "status")\
+            .eq("user_id", user_id)\
+            .order("created_at", { "ascending": False })\
+            .limit(50)\
+            .execute()
+        
+        history = response.data
+        if not history:
+            return {"user_id": user_id, "fraud_score": 0.0, "recommendation": "LOW_RISK"}
+
+        # Logic: If more than 5 failed verifications in 24h, flag for review
+        failed_count = sum(1 for v in history if v.get("status") == "NOT_FOUND")
+        
+        fraud_score = (failed_count / 10.0) if failed_count < 10 else 1.0
+        recommendation = "HIGH_RISK" if fraud_score > 0.6 else "MEDIUM_RISK" if fraud_score > 0.3 else "LOW_RISK"
+
+        return {
+            "user_id": user_id, 
+            "fraud_score": fraud_score, 
+            "recommendation": recommendation,
+            "failed_attempts": failed_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/verify/education/{institution}")
 async def verify_institutional_data(

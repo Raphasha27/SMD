@@ -74,6 +74,20 @@ export default function AdminScreen({ navigation }) {
     }
   };
 
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      const { error } = await supabase
+        .from('verification_requests')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+      fetchManualRequests(); // Refresh list
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
   if (loading) {
     return <View style={styles.center}><ActivityIndicator color={COLORS.primary} size="large" /></View>;
   }
@@ -107,13 +121,28 @@ export default function AdminScreen({ navigation }) {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>PENDING MANUAL REVIEWS ({manualRequests.length})</Text>
             {manualRequests.map((req) => (
-              <TouchableOpacity key={req.id} style={[styles.logItem, { borderLeftWidth: 4, borderLeftColor: COLORS.secondary }]}>
+              <View key={req.id} style={[styles.logItem, { borderLeftWidth: 4, borderLeftColor: COLORS.secondary }]}>
                 <View style={styles.logHeader}>
                   <Text style={styles.logUser}>{req.entity_name}</Text>
                   <View style={styles.pendingBadge}><Text style={styles.pendingText}>PENDING</Text></View>
                 </View>
                 <Text style={styles.logMeta}>Type: {req.entity_type} • Ref: {req.id.slice(0, 8)}</Text>
-              </TouchableOpacity>
+                
+                <View style={styles.adminActions}>
+                  <TouchableOpacity 
+                    style={[styles.actionBtn, styles.approveBtn]} 
+                    onPress={() => handleStatusUpdate(req.id, 'APPROVED')}
+                  >
+                    <Text style={styles.actionBtnText}>Approve</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.actionBtn, styles.rejectBtn]} 
+                    onPress={() => handleStatusUpdate(req.id, 'REJECTED')}
+                  >
+                    <Text style={styles.actionBtnText}>Reject</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             ))}
           </View>
         )}
@@ -163,5 +192,10 @@ const styles = StyleSheet.create({
   btnText: { color: COLORS.primary, fontWeight: '800' },
   section: { marginBottom: 30 },
   pendingBadge: { backgroundColor: '#FEF3C7', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 },
-  pendingText: { color: '#D97706', fontSize: 10, fontWeight: '900' }
+  pendingText: { color: '#D97706', fontSize: 10, fontWeight: '900' },
+  adminActions: { flexDirection: 'row', gap: 10, marginTop: 15, borderTopWidth: 1, borderTopColor: '#F1F5F9', paddingTop: 12 },
+  actionBtn: { flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
+  approveBtn: { backgroundColor: '#DEF7EC' },
+  rejectBtn: { backgroundColor: '#FDE8E8' },
+  actionBtnText: { fontSize: 12, fontWeight: '700' }
 });

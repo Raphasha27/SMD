@@ -173,16 +173,22 @@ export default function DashboardScreen({ navigation }) {
           activeOpacity={0.9}
         >
           <LinearGradient
-            colors={[COLORS.primary, '#1E1B4B']}
+            colors={user?.subscription_status === 'PREMIUM' ? ['#064E3B', '#065F46'] : [COLORS.primary, '#1E1B4B']}
             style={styles.proGrad}
           >
             <View>
-              <Text style={styles.proTitle}>Go Premium</Text>
-              <Text style={styles.proSubtitle}>Unlimited verifications & tools</Text>
+              <Text style={styles.proTitle}>
+                {user?.subscription_status === 'PREMIUM' ? 'Member Benefits 💎' : 'Go Premium'}
+              </Text>
+              <Text style={styles.proSubtitle}>
+                {user?.subscription_status === 'PREMIUM' ? 'You have unlimited access' : 'Unlimited verifications & tools'}
+              </Text>
             </View>
             <View style={styles.proBadge}>
-              <Text style={styles.proPrice}>R49</Text>
-              <Text style={styles.proMonth}>/mo</Text>
+              <Text style={styles.proPrice}>
+                {user?.subscription_status === 'PREMIUM' ? 'ACTIVE' : 'R149'}
+              </Text>
+              <Text style={styles.proMonth}>{user?.subscription_status === 'PREMIUM' ? '' : '/mo'}</Text>
             </View>
           </LinearGradient>
         </TouchableOpacity>
