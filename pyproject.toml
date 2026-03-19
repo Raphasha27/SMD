@@ -1,0 +1,14 @@
+[project]
+name = "sumbandila"
+version = "1.0.0"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "supabase==2.10.0",
+    "python-dotenv",
+    "requests",
+    "pydantic"
+]
+
+[tool.setuptools]
+packages = ["backend", "backend.adapters"]

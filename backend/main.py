@@ -129,7 +129,7 @@ async def verify_institutional_data(
     """
     Core Verification Engine with Phase 4 Security (JWT + Rate Limiting).
     """
-    user_id = user.id if hasattr(user, 'id') else user.get('id')
+    user_id = getattr(user, 'id', None) or user.get('id')
     
     # 🚦 Rate Limiting (20 checks/hour)
     now = time.time()
