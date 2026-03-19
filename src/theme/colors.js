@@ -1,26 +1,30 @@
 export const COLORS = {
-  primary: '#0A2463',       // Deep navy blue
-  primaryLight: '#1A3A7E',  // Lighter navy
-  secondary: '#F4C842',     // Gold/yellow
-  accent: '#3E92CC',        // Sky blue
-  success: '#2ECC71',       // Green verified
-  danger: '#E74C3C',        // Red unable to verify
-  warning: '#F39C12',       // Orange under review
-  background: '#F0F4FF',    // Light blue-grey
+  primary: '#0F172A',       // Slate 900 - Deep, modern navy
+  primaryLight: '#1E293B',  // Slate 800
+  secondary: '#F59E0B',     // Amber 500 - Refined Gold
+  accent: '#3B82F6',        // Blue 500
+  accentLight: '#60A5FA',   // Blue 400
+  success: '#10B981',       // Emerald 500
+  danger: '#EF4444',        // Red 500
+  warning: '#F59E0B',       // Amber 500
+  background: '#F8FAFC',    // Slate 50 - Very light grey-blue
   card: '#FFFFFF',
-  text: '#1A1A2E',
-  textLight: '#6B7A99',
-  textMuted: '#A0AEC0',
-  border: '#E2E8F0',
-  gradientStart: '#0A2463',
-  gradientEnd: '#1565C0',
+  text: '#0F172A',          // Slate 900
+  textLight: '#475569',     // Slate 600
+  textMuted: '#94A3B8',     // Slate 400
+  border: '#E2E8F0',        // Slate 200
+  gradientStart: '#1E293B',
+  gradientEnd: '#0F172A',
   tabBar: '#FFFFFF',
-  overlay: 'rgba(10,36,99,0.85)',
+  overlay: 'rgba(15, 23, 42, 0.75)',
+  glass: 'rgba(255, 255, 255, 0.8)',
 };
 
 export const FONTS = {
   regular: 'System',
+  medium: 'System',
   bold: 'System',
+  black: 'System',
 };
 
 export const SPACING = {
@@ -33,33 +37,34 @@ export const SPACING = {
 };
 
 export const RADIUS = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  xs: 6,
+  sm: 10,
+  md: 14,
+  lg: 20,
+  xl: 28,
   full: 999,
 };
 
 export const SHADOW = {
   small: {
-    shadowColor: '#0A2463',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   medium: {
-    shadowColor: '#0A2463',
+    shadowColor: '#0F172A',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
   large: {
-    shadowColor: '#0A2463',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
     elevation: 10,
   },
 };

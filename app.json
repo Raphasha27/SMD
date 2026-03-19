@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "Sumbandila",
-    "slug": "sumbandila",
+    "name": "Sumbandila Pro",
+    "slug": "sumbandila-pro",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0A2463"
+      "backgroundColor": "#0F172A"
     },
     "ios": {
       "supportsTablet": true,

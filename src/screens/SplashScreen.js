@@ -1,129 +1,202 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  View, Text, StyleSheet, Animated, Dimensions, TouchableOpacity,
+  View, Text, StyleSheet, Animated, Dimensions, StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, SPACING, RADIUS } from '../theme/colors';
+import { COLORS, SPACING, RADIUS, SHADOW } from '../theme/colors';
 
 const { width, height } = Dimensions.get('window');
 
 export default function SplashScreen({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const slideAnim = useRef(new Animated.Value(40)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
-      Animated.spring(scaleAnim, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { 
+        toValue: 1, 
+        duration: 1200, 
+        useNativeDriver: true 
+      }),
+      Animated.spring(scaleAnim, { 
+        toValue: 1, 
+        tension: 40, 
+        friction: 7, 
+        useNativeDriver: true 
+      }),
+      Animated.timing(slideAnim, { 
+        toValue: 0, 
+        duration: 1000, 
+        useNativeDriver: true 
+      }),
     ]).start();
 
     const timer = setTimeout(() => {
       navigation.replace('Login');
-    }, 3200);
+    }, 3500);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <LinearGradient colors={['#0A2463', '#1565C0', '#1A237E']} style={styles.container}>
-      {/* Background circles */}
-      <View style={styles.circle1} />
-      <View style={styles.circle2} />
+    <View style={styles.container}>
+      <StatusBar hidden />
+      <LinearGradient 
+        colors={[COLORS.primaryLight, COLORS.primary, '#020617']} 
+        style={styles.gradient}
+      >
+        {/* Dynamic Background Elements */}
+        <View style={styles.orb1} />
+        <View style={styles.orb2} />
 
-      {/* SA Flag stripe */}
-      <View style={styles.flagStripe}>
-        <View style={[styles.stripeBar, { backgroundColor: '#007A4D' }]} />
-        <View style={[styles.stripeBar, { backgroundColor: '#FFFFFF' }]} />
-        <View style={[styles.stripeBar, { backgroundColor: '#001489' }]} />
-      </View>
+        <Animated.View style={[
+          styles.content, 
+          { 
+            opacity: fadeAnim, 
+            transform: [
+              { scale: scaleAnim },
+              { translateY: slideAnim }
+            ] 
+          }
+        ]}>
+          {/* Brand Logo Shield */}
+          <View style={styles.logoOuter}>
+            <LinearGradient
+              colors={[COLORS.secondary, '#B45309']}
+              style={styles.logoInner}
+            >
+              <Text style={styles.shieldIcon}>🛡️</Text>
+              <View style={styles.verifiedBadge}>
+                <Text style={styles.verifyCheck}>✓</Text>
+              </View>
+            </LinearGradient>
+          </View>
 
-      <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
-        {/* Shield Logo */}
-        <View style={styles.logoContainer}>
-          <View style={styles.shield}>
-            <Text style={styles.shieldIcon}>🛡️</Text>
-            <View style={styles.checkmark}>
-              <Text style={styles.checkmarkText}>✓</Text>
+          <Text style={styles.appName}>Sumbandila</Text>
+          <View style={styles.accentBar} />
+          <Text style={styles.tagline}>PREMIUM VERIFICATION ENGINE</Text>
+          <Text style={styles.location}>Republic of South Africa 🇿🇦</Text>
+
+          <View style={styles.footerContainer}>
+            <Text style={styles.footerText}>Secure • Transparent • Verified</Text>
+            <View style={styles.loadingContainer}>
+              <View style={styles.loadingTrack}>
+                <Animated.View style={[styles.loadingBar, {
+                  width: fadeAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0%', '100%']
+                  })
+                }]} />
+              </View>
             </View>
           </View>
-        </View>
-
-        <Animated.View style={{ transform: [{ translateY: slideAnim }] }}>
-          <Text style={styles.appName}>Sumbandila</Text>
-          <Text style={styles.tagline}>VERIFICATION & FUNDING HUB</Text>
-          <Text style={styles.country}>South Africa</Text>
         </Animated.View>
-
-        <Animated.Text style={[styles.motto, { opacity: fadeAnim }]}>
-          Verified. Connected. Supported.
-        </Animated.Text>
-      </Animated.View>
-
-      <View style={styles.bottom}>
-        <View style={styles.dots}>
-          <View style={[styles.dot, styles.dotActive]} />
-          <View style={styles.dot} />
-          <View style={styles.dot} />
-        </View>
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  circle1: {
-    position: 'absolute', width: 300, height: 300, borderRadius: 150,
-    backgroundColor: 'rgba(255,255,255,0.04)', top: -60, right: -80,
+  container: { flex: 1 },
+  gradient: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  orb1: {
+    position: 'absolute',
+    top: -100,
+    right: -50,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(59, 130, 246, 0.08)',
   },
-  circle2: {
-    position: 'absolute', width: 200, height: 200, borderRadius: 100,
-    backgroundColor: 'rgba(255,255,255,0.04)', bottom: 80, left: -60,
+  orb2: {
+    position: 'absolute',
+    bottom: -80,
+    left: -100,
+    width: 350,
+    height: 350,
+    borderRadius: 175,
+    backgroundColor: 'rgba(245, 158, 11, 0.08)',
   },
-  flagStripe: {
-    position: 'absolute', left: 0, top: 0, bottom: 0, width: 6,
-    flexDirection: 'column',
+  content: { alignItems: 'center', width: '100%', paddingHorizontal: SPACING.xl },
+  logoOuter: {
+    width: 120,
+    height: 120,
+    borderRadius: 38,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    padding: 3,
+    marginBottom: 24,
+    ...SHADOW.large,
   },
-  stripeBar: { flex: 1 },
-  content: { alignItems: 'center', paddingHorizontal: SPACING.xl },
-  logoContainer: { marginBottom: SPACING.lg },
-  shield: {
-    width: 100, height: 100, justifyContent: 'center', alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: RADIUS.xl,
-    borderWidth: 2, borderColor: 'rgba(244,200,66,0.5)',
+  logoInner: {
+    flex: 1,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  shieldIcon: { fontSize: 52 },
-  checkmark: {
-    position: 'absolute', bottom: -4, right: -4,
-    backgroundColor: COLORS.success, width: 28, height: 28,
-    borderRadius: 14, justifyContent: 'center', alignItems: 'center',
-    borderWidth: 2, borderColor: '#fff',
+  shieldIcon: { fontSize: 60 },
+  verifiedBadge: {
+    position: 'absolute',
+    bottom: -10,
+    right: -10,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: COLORS.success,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: COLORS.primary,
   },
-  checkmarkText: { color: '#fff', fontWeight: '900', fontSize: 14 },
+  verifyCheck: { color: '#fff', fontWeight: '900', fontSize: 18 },
   appName: {
-    fontSize: 42, fontWeight: '800', color: '#FFFFFF',
-    textAlign: 'center', letterSpacing: 1,
+    fontSize: 48,
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: -1,
+  },
+  accentBar: {
+    width: 40,
+    height: 4,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 2,
+    marginVertical: 12,
   },
   tagline: {
-    fontSize: 12, fontWeight: '700', color: COLORS.secondary,
-    textAlign: 'center', letterSpacing: 3, marginTop: 4,
+    fontSize: 12,
+    fontWeight: '800',
+    color: 'rgba(255,255,255,0.8)',
+    letterSpacing: 4,
   },
-  country: {
-    fontSize: 13, color: 'rgba(255,255,255,0.6)',
-    textAlign: 'center', marginTop: 4,
+  location: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.5)',
+    marginTop: 8,
+    fontWeight: '600',
   },
-  motto: {
-    fontSize: 15, color: 'rgba(255,255,255,0.7)',
-    textAlign: 'center', marginTop: SPACING.xl, fontStyle: 'italic',
+  footerContainer: {
+    marginTop: 60,
+    alignItems: 'center',
+    width: '100%',
   },
-  bottom: {
-    position: 'absolute', bottom: 50, alignItems: 'center',
+  footerText: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.4)',
+    fontWeight: '600',
+    letterSpacing: 1,
+    marginBottom: 20,
   },
-  dots: { flexDirection: 'row', gap: 8 },
-  dot: {
-    width: 8, height: 8, borderRadius: 4,
-    backgroundColor: 'rgba(255,255,255,0.3)',
+  loadingContainer: {
+    width: 200,
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 2,
+    overflow: 'hidden',
   },
-  dotActive: { backgroundColor: COLORS.secondary, width: 24, borderRadius: 4 },
+  loadingTrack: { flex: 1 },
+  loadingBar: {
+    height: '100%',
+    backgroundColor: COLORS.secondary,
+    borderRadius: 2,
+  },
 });

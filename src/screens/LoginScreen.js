@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   Animated, KeyboardAvoidingView, Platform, ScrollView, Alert,
+  StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SPACING, RADIUS, SHADOW } from '../theme/colors';
@@ -12,160 +13,195 @@ export default function LoginScreen({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
 
   React.useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
+    ]).start();
   }, []);
 
   const handleLogin = () => {
     if (!email || !password) {
-      Alert.alert('Missing Fields', 'Please enter your email and password.');
+      Alert.alert('Incomplete Fields', 'Please enter your email and password to proceed.');
       return;
     }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       navigation.replace('Main');
-    }, 1200);
+    }, 1500);
   };
 
   return (
-    <LinearGradient colors={['#0A2463', '#1565C0']} style={styles.gradient}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-            {/* Logo */}
-            <View style={styles.logoArea}>
-              <View style={styles.logoCircle}>
-                <Text style={styles.logoIcon}>🛡️</Text>
-              </View>
-              <Text style={styles.brandName}>Sumbandila</Text>
-              <Text style={styles.brandSub}>VERIFICATION & FUNDING HUB</Text>
-              <Text style={styles.brandCountry}>South Africa</Text>
-            </View>
-
-            {/* Card */}
-            <View style={styles.card}>
-              <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.subtitle}>Sign in to your account</Text>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email</Text>
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputIcon}>📧</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="your@email.co.za"
-                    placeholderTextColor={COLORS.textMuted}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                  />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <LinearGradient colors={[COLORS.primaryLight, COLORS.primary]} style={styles.background}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+          style={styles.flex}
+        >
+          <ScrollView 
+            contentContainerStyle={styles.scroll} 
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+              {/* Premium Brand Area */}
+              <View style={styles.brandArea}>
+                <View style={styles.logoOuter}>
+                  <LinearGradient
+                    colors={[COLORS.secondary, '#D97706']}
+                    style={styles.logoInner}
+                  >
+                    <Text style={styles.logoText}>🛡️</Text>
+                  </LinearGradient>
                 </View>
+                <Text style={styles.brandTitle}>Sumbandila</Text>
+                <Text style={styles.brandSub}>NATIONAL VERIFICATION HUB</Text>
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Password</Text>
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputIcon}>🔒</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter password"
-                    placeholderTextColor={COLORS.textMuted}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                  />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                    <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '🔕'}</Text>
-                  </TouchableOpacity>
+              {/* Login Card */}
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>Sign In</Text>
+                <Text style={styles.cardSubtitle}>Access your verified dashboard</Text>
+
+                <View style={styles.inputSection}>
+                  <View style={styles.inputBox}>
+                    <Text style={styles.inputIcon}>📧</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Email Address"
+                      placeholderTextColor={COLORS.textMuted}
+                      value={email}
+                      onChangeText={setEmail}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
+                  </View>
+
+                  <View style={styles.inputBox}>
+                    <Text style={styles.inputIcon}>🔒</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Password"
+                      placeholderTextColor={COLORS.textMuted}
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry={!showPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+                      <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
 
-              <TouchableOpacity style={styles.forgotBtn}>
-                <Text style={styles.forgotText}>Forgot your password?</Text>
-              </TouchableOpacity>
+                <TouchableOpacity style={styles.forgotPass}>
+                  <Text style={styles.forgotText}>Forgot Password?</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[styles.loginBtn, loading && styles.loginBtnDisabled]}
-                onPress={handleLogin}
-                disabled={loading}
-              >
-                <LinearGradient
-                  colors={['#0A2463', '#1565C0']}
-                  style={styles.loginGradient}
-                  start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                <TouchableOpacity
+                  style={[styles.btn, loading && styles.btnDisabled]}
+                  onPress={handleLogin}
+                  disabled={loading}
                 >
-                  <Text style={styles.loginText}>{loading ? 'Signing in…' : 'Login'}</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+                  <LinearGradient
+                    colors={[COLORS.accent, '#2563EB']}
+                    style={styles.btnGrad}
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                  >
+                    <Text style={styles.btnText}>{loading ? 'Verifying...' : 'Login'}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
 
-              <View style={styles.divider}>
-                <View style={styles.divLine} />
-                <Text style={styles.divText}>or</Text>
-                <View style={styles.divLine} />
+                <View style={styles.orRow}>
+                  <View style={styles.line} />
+                  <Text style={styles.orText}>New Here?</Text>
+                  <View style={styles.line} />
+                </View>
+
+                <TouchableOpacity 
+                  style={styles.outlineBtn} 
+                  onPress={() => navigation.replace('Main')}
+                >
+                  <Text style={styles.outlineBtnText}>Create Account</Text>
+                </TouchableOpacity>
               </View>
 
-              <TouchableOpacity style={styles.registerBtn} onPress={() => navigation.replace('Main')}>
-                <Text style={styles.registerText}>Create New Account</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.tagline}>Verified. Connected. Supported.</Text>
-          </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </LinearGradient>
+              <Text style={styles.statusFooter}>POPIA Compliant • Secure 256-bit AES</Text>
+            </Animated.View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: { flex: 1 },
+  container: { flex: 1 },
+  background: { flex: 1 },
   flex: { flex: 1 },
   scroll: { flexGrow: 1, justifyContent: 'center', padding: SPACING.lg },
-  container: { alignItems: 'center' },
-  logoArea: { alignItems: 'center', marginBottom: SPACING.xl },
-  logoCircle: {
-    width: 80, height: 80, borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderWidth: 2, borderColor: 'rgba(244,200,66,0.5)',
-    justifyContent: 'center', alignItems: 'center',
-    marginBottom: SPACING.md,
+  content: { alignItems: 'center', width: '100%' },
+  brandArea: { alignItems: 'center', marginBottom: 40 },
+  logoOuter: {
+    width: 90,
+    height: 90,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    padding: 2,
+    ...SHADOW.medium,
   },
-  logoIcon: { fontSize: 40 },
-  brandName: { fontSize: 30, fontWeight: '800', color: '#fff', letterSpacing: 0.5 },
-  brandSub: { fontSize: 10, fontWeight: '700', color: COLORS.secondary, letterSpacing: 2, marginTop: 2 },
-  brandCountry: { fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 },
+  logoInner: {
+    flex: 1,
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoText: { fontSize: 44 },
+  brandTitle: { fontSize: 32, fontWeight: '900', color: '#fff', marginTop: 16, letterSpacing: -0.5 },
+  brandSub: { fontSize: 11, fontWeight: '800', color: COLORS.secondary, letterSpacing: 2.5, marginTop: 4 },
   card: {
-    backgroundColor: '#fff', borderRadius: RADIUS.xl, padding: SPACING.xl,
-    width: '100%', ...SHADOW.large,
+    backgroundColor: '#fff',
+    borderRadius: RADIUS.xl,
+    padding: 30,
+    width: '100%',
+    ...SHADOW.large,
   },
-  title: { fontSize: 24, fontWeight: '800', color: COLORS.text, marginBottom: 4 },
-  subtitle: { fontSize: 14, color: COLORS.textLight, marginBottom: SPACING.lg },
-  inputGroup: { marginBottom: SPACING.md },
-  label: { fontSize: 13, fontWeight: '600', color: COLORS.text, marginBottom: 6 },
-  inputWrapper: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: COLORS.background, borderRadius: RADIUS.md,
-    paddingHorizontal: SPACING.md, borderWidth: 1, borderColor: COLORS.border,
+  cardTitle: { fontSize: 26, fontWeight: '900', color: COLORS.text, marginBottom: 4 },
+  cardSubtitle: { fontSize: 14, color: COLORS.textLight, marginBottom: 28 },
+  inputSection: { gap: 16 },
+  inputBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: 16,
+    height: 56,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
-  inputIcon: { fontSize: 16, marginRight: 8 },
-  input: { flex: 1, height: 48, color: COLORS.text, fontSize: 15 },
-  eyeIcon: { fontSize: 18, padding: 4 },
-  forgotBtn: { alignSelf: 'flex-end', marginBottom: SPACING.md },
-  forgotText: { color: COLORS.accent, fontSize: 13, fontWeight: '600' },
-  loginBtn: { borderRadius: RADIUS.md, overflow: 'hidden', marginBottom: SPACING.md },
-  loginBtnDisabled: { opacity: 0.7 },
-  loginGradient: { paddingVertical: 14, alignItems: 'center' },
-  loginText: { color: '#fff', fontSize: 16, fontWeight: '700', letterSpacing: 0.5 },
-  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: SPACING.sm },
-  divLine: { flex: 1, height: 1, backgroundColor: COLORS.border },
-  divText: { marginHorizontal: 12, color: COLORS.textMuted, fontSize: 13 },
-  registerBtn: {
-    borderWidth: 1.5, borderColor: COLORS.primary, borderRadius: RADIUS.md,
-    paddingVertical: 13, alignItems: 'center',
+  inputIcon: { fontSize: 18, marginRight: 12 },
+  input: { flex: 1, height: '100%', color: COLORS.text, fontSize: 16, fontWeight: '500' },
+  eyeBtn: { padding: 4 },
+  eyeIcon: { fontSize: 18 },
+  forgotPass: { alignSelf: 'flex-end', marginTop: 12, marginBottom: 28 },
+  forgotText: { color: COLORS.accent, fontSize: 14, fontWeight: '700' },
+  btn: { borderRadius: RADIUS.md, overflow: 'hidden', ...SHADOW.medium },
+  btnDisabled: { opacity: 0.7 },
+  btnGrad: { paddingVertical: 16, alignItems: 'center' },
+  btnText: { color: '#fff', fontSize: 17, fontWeight: '800', letterSpacing: 0.5 },
+  orRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
+  line: { flex: 1, height: 1, backgroundColor: COLORS.border },
+  orText: { marginHorizontal: 15, color: COLORS.textMuted, fontSize: 13, fontWeight: '600' },
+  outlineBtn: {
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderRadius: RADIUS.md,
+    paddingVertical: 14,
+    alignItems: 'center',
   },
-  registerText: { color: COLORS.primary, fontWeight: '700', fontSize: 15 },
-  tagline: { color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', fontSize: 13, marginTop: SPACING.xl },
+  outlineBtnText: { color: COLORS.primary, fontWeight: '800', fontSize: 16 },
+  statusFooter: { color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: '600', marginTop: 40 },
 });

@@ -1,29 +1,24 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View } from 'react-native';
-import { COLORS } from '../theme/colors';
+import { Text, View, StyleSheet, Platform } from 'react-native';
+import { COLORS, SPACING, SHADOW, RADIUS } from '../theme/colors';
 
 import DashboardScreen     from '../screens/DashboardScreen';
 import CareerHubScreen     from '../screens/CareerHubScreen';
 import BusinessToolsScreen from '../screens/BusinessToolsScreen';
 import ProfileScreen       from '../screens/ProfileScreen';
-
-// Verify tab just re-uses the Verification Selection screen
 import VerificationSelectionScreen from '../screens/VerificationSelectionScreen';
 
 const Tab = createBottomTabNavigator();
 
 const TabIcon = ({ icon, label, focused }) => (
-  <View style={{ alignItems: 'center', paddingTop: 4 }}>
-    <Text style={{ fontSize: focused ? 22 : 20 }}>{icon}</Text>
-    <Text style={{
-      fontSize: 10,
-      marginTop: 2,
-      fontWeight: focused ? '800' : '500',
-      color: focused ? COLORS.primary : COLORS.textMuted,
-    }}>
-      {label}
-    </Text>
+  <View style={[styles.tabIconContainer, focused && styles.activeTabBg]}>
+    <Text style={[styles.iconText, { opacity: focused ? 1 : 0.6 }]}>{icon}</Text>
+    {focused && (
+      <Text style={styles.tabLabel}>
+        {label}
+      </Text>
+    )}
   </View>
 );
 
@@ -33,20 +28,8 @@ export default function MainTabs() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopColor: '#E8ECF0',
-          borderTopWidth: 1,
-          height: 70,
-          paddingBottom: 10,
-          paddingTop: 6,
-          elevation: 12,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -3 },
-          shadowOpacity: 0.08,
-          shadowRadius: 8,
-        },
-        tabBarActiveTintColor: COLORS.primary,
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: COLORS.accent,
         tabBarInactiveTintColor: COLORS.textMuted,
       }}
     >
@@ -61,21 +44,21 @@ export default function MainTabs() {
         name="Verify"
         component={VerificationSelectionScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon icon="🔍" label="Verify" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon="🛡️" label="Verify" focused={focused} />,
         }}
       />
       <Tab.Screen
         name="Career Hub"
         component={CareerHubScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon icon="💼" label="Career" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon="💼" label="Talent" focused={focused} />,
         }}
       />
       <Tab.Screen
         name="Biz Tools"
         component={BusinessToolsScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon icon="🏢" label="Biz Tools" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon="🚀" label="Tools" focused={focused} />,
         }}
       />
       <Tab.Screen
@@ -88,3 +71,37 @@ export default function MainTabs() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: '#FFFFFF',
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 30 : 20,
+    left: 20,
+    right: 20,
+    borderRadius: 25,
+    height: 70,
+    paddingBottom: Platform.OS === 'ios' ? 0 : 0,
+    borderTopWidth: 0,
+    ...SHADOW.large,
+  },
+  tabIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  activeTabBg: {
+    backgroundColor: COLORS.background,
+  },
+  iconText: {
+    fontSize: 22,
+  },
+  tabLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: COLORS.primary,
+    marginLeft: 8,
+  },
+});

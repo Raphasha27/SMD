@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  TextInput, Dimensions,
+  TextInput, Dimensions, StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SPACING, RADIUS, SHADOW } from '../theme/colors';
@@ -9,19 +9,19 @@ import { COLORS, SPACING, RADIUS, SHADOW } from '../theme/colors';
 const { width } = Dimensions.get('window');
 
 const verifyCards = [
-  { icon: '🎓', label: 'Schools/\nColleges', screen: 'EducationVerification', color: '#1565C0' },
-  { icon: '🩺', label: 'Doctors', screen: 'MedicalVerification', color: '#27AE60' },
-  { icon: '⚖️', label: 'Lawyers', screen: 'LegalVerification', color: '#8E44AD' },
-  { icon: '📜', label: 'Accredited\nTraining', screen: 'AccreditedTraining', color: '#E67E22', isNew: true },
+  { icon: '🎓', label: 'Schools/\nColleges', screen: 'EducationVerification', color: '#3B82F6' },
+  { icon: '🩺', label: 'Doctors', screen: 'MedicalVerification', color: '#10B981' },
+  { icon: '⚖️', label: 'Lawyers', screen: 'LegalVerification', color: '#8B5CF6' },
+  { icon: '📜', label: 'Accredited\nTraining', screen: 'AccreditedTraining', color: '#F59E0B', isNew: true },
 ];
 
 const opportunityCards = [
-  { icon: '🤝', label: 'Job & Talent\nMarketplace', screen: 'CareerHubDirect', color: '#0D9E87', isNew: true },
-  { icon: '📋', label: 'B2B\nProcurement\n& Tenders', screen: 'B2BProcurement', color: '#0A2463', isNew: true },
-  { icon: '🏛️', label: 'Government\nGrants', screen: 'FundingDetail', color: '#C0392B', logos: 'dti · NEF · IDC' },
-  { icon: '🏢', label: 'SME\nCompliance\nPortal', screen: 'Compliance', color: '#E67E22', isNew: true },
-  { icon: '🏅', label: 'Digital Trust\nBadges', screen: 'VendorDirectory', color: '#1565C0', isNew: true },
-  { icon: '🤲', label: 'Corporate\nCSR', screen: 'Support', color: '#2C3E50' },
+  { icon: '🤝', label: 'Talent\nMarketplace', screen: 'CareerHubDirect', color: '#059669', isNew: true },
+  { icon: '📋', label: 'B2B\nProcurement', screen: 'B2BProcurement', color: '#1E293B', isNew: true },
+  { icon: '🏛️', label: 'Grants &\nFunding', screen: 'FundingDetail', color: '#DC2626', logos: 'dti · NEF' },
+  { icon: '🏢', label: 'Compliance\nPortal', screen: 'Compliance', color: '#D97706', isNew: true },
+  { icon: '🏅', label: 'Trust\nBadges', screen: 'VendorDirectory', color: '#2563EB', isNew: true },
+  { icon: '🤲', label: 'Corporate\nCSR', screen: 'Support', color: '#475569' },
 ];
 
 export default function DashboardScreen({ navigation }) {
@@ -39,12 +39,19 @@ export default function DashboardScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <LinearGradient colors={['#0A2463', '#1565C0']} style={styles.header}>
+      <StatusBar barStyle="light-content" />
+      
+      {/* Modern Header with Dynamic Gradient */}
+      <LinearGradient 
+        colors={[COLORS.primaryLight, COLORS.primary]} 
+        style={styles.header}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.greeting}>Good day 👋</Text>
-            <Text style={styles.headerTitle}>Main Dashboard</Text>
+            <Text style={styles.greeting}>Welcome back ✨</Text>
+            <Text style={styles.headerTitle}>Sumbandila Hub</Text>
           </View>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.iconBtn}>
@@ -56,12 +63,13 @@ export default function DashboardScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </View>
+        
         <View style={styles.searchBar}>
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search institutions, doctors, lawyers…"
-            placeholderTextColor="rgba(255,255,255,0.5)"
+            placeholder="Search professional verifications..."
+            placeholderTextColor="rgba(255,255,255,0.4)"
             value={search}
             onChangeText={setSearch}
             returnKeyType="search"
@@ -69,132 +77,132 @@ export default function DashboardScreen({ navigation }) {
         </View>
       </LinearGradient>
 
-      <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
-
-        {/* Global Talent Marketplace Banner */}
-        <TouchableOpacity style={styles.topBanner} onPress={() => navigation.getParent()?.navigate('Career Hub')} activeOpacity={0.9}>
-          <LinearGradient colors={['#0A7163', '#0D9E87']} style={styles.topBannerGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-            <Text style={styles.topBannerStar}>⭐</Text>
-            <Text style={styles.topBannerText}>
-              <Text style={{ fontWeight: '900' }}>**NEW: Global Verified Talent Marketplace</Text>
-              {' '}- Find Accredited Pros Instantly.
-            </Text>
-            <Text style={{ color: '#fff', fontSize: 16 }}>›</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        {/* VERIFY INSTANTLY */}
+      <ScrollView 
+        style={styles.body} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        {/* Verification Selection */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>VERIFY INSTANTLY</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {verifyCards.map((card) => (
+          <View style={styles.sectionRow}>
+            <Text style={styles.sectionTitle}>INSTANT VERIFICATION</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('VerificationSelection')}>
+              <Text style={styles.seeAll}>View all ›</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+            {verifyCards.map((card, idx) => (
               <TouchableOpacity
-                key={card.label}
+                key={idx}
                 style={styles.verifyCard}
                 onPress={() => navigation.navigate(card.screen)}
-                activeOpacity={0.85}
+                activeOpacity={0.8}
               >
-                {card.isNew && (
-                  <View style={styles.newBadge}><Text style={styles.newText}>NEW</Text></View>
-                )}
-                <View style={[styles.verifyIconBox, { backgroundColor: card.color + '18' }]}>
+                <LinearGradient
+                  colors={[card.color + '20', card.color + '05']}
+                  style={styles.verifyIconBox}
+                >
                   <Text style={styles.verifyIcon}>{card.icon}</Text>
-                </View>
+                </LinearGradient>
                 <Text style={styles.verifyLabel}>{card.label}</Text>
+                {card.isNew && (
+                  <View style={styles.newTag}>
+                    <Text style={styles.newTagText}>NEW</Text>
+                  </View>
+                )}
               </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
 
-        {/* ACCESS OPPORTUNITIES & SUPPORT */}
+        {/* Highlighted Opportunity Banner */}
+        <TouchableOpacity 
+          style={styles.mainBanner} 
+          onPress={() => navigation.getParent()?.navigate('Career Hub')}
+          activeOpacity={0.9}
+        >
+          <LinearGradient
+            colors={['#059669', '#10B981']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.mainBannerGrad}
+          >
+            <View style={styles.bannerContent}>
+              <View style={styles.bannerIconBox}>
+                <Text style={{ fontSize: 24 }}>🌍</Text>
+              </View>
+              <View>
+                <Text style={styles.bannerTitle}>Verified Talent Hub</Text>
+                <Text style={styles.bannerSub}>Connect with accredited professionals</Text>
+              </View>
+            </View>
+            <Text style={styles.bannerArrow}>›</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Grid of Tools */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ACCESS OPPORTUNITIES & SUPPORT</Text>
-          <View style={styles.oppGrid}>
-            {opportunityCards.map((card) => (
+          <Text style={styles.sectionTitle}>TOOLS & OPPORTUNITIES</Text>
+          <View style={styles.gridContainer}>
+            {opportunityCards.map((card, idx) => (
               <TouchableOpacity
-                key={card.label}
-                style={styles.oppCard}
+                key={idx}
+                style={styles.gridCard}
                 onPress={() => navigate(card.screen)}
-                activeOpacity={0.85}
+                activeOpacity={0.8}
               >
-                {card.isNew && (
-                  <View style={styles.newBadgeCard}><Text style={styles.newText}>NEW</Text></View>
-                )}
-                <View style={[styles.oppIcon, { backgroundColor: card.color + '18' }]}>
-                  <Text style={{ fontSize: 24 }}>{card.icon}</Text>
+                <View style={[styles.gridIconCircle, { backgroundColor: card.color + '10' }]}>
+                  <Text style={{ fontSize: 22 }}>{card.icon}</Text>
                 </View>
-                <Text style={styles.oppLabel}>{card.label}</Text>
-                {card.logos && <Text style={styles.oppLogos}>{card.logos}</Text>}
+                <View style={styles.gridTextContent}>
+                  <Text style={styles.gridLabel}>{card.label}</Text>
+                  {card.logos && <Text style={styles.gridSubText}>{card.logos}</Text>}
+                </View>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
-        {/* Get Sumbandila Pro */}
-        <TouchableOpacity style={styles.proBanner} onPress={() => navigation.navigate('Subscription')} activeOpacity={0.9}>
-          <LinearGradient colors={['#0A2463', '#1A237E']} style={styles.proBannerGrad}>
-            <View style={styles.proLeft}>
-              <Text style={styles.proCrown}>👑</Text>
-              <View>
-                <Text style={styles.proTitle}>Get Sumbandila Pro</Text>
-                <Text style={styles.proSub}>Individual R49/mo · Business R299/mo · Enterprise</Text>
-              </View>
+        {/* Subscription / Pro Card */}
+        <TouchableOpacity 
+          style={styles.proCard} 
+          onPress={() => navigation.navigate('Subscription')}
+          activeOpacity={0.9}
+        >
+          <LinearGradient
+            colors={[COLORS.primary, '#1E1B4B']}
+            style={styles.proGrad}
+          >
+            <View>
+              <Text style={styles.proTitle}>Go Premium</Text>
+              <Text style={styles.proSubtitle}>Unlimited verifications & tools</Text>
             </View>
-            <Text style={{ color: COLORS.secondary, fontSize: 22 }}>›</Text>
+            <View style={styles.proBadge}>
+              <Text style={styles.proPrice}>R49</Text>
+              <Text style={styles.proMonth}>/mo</Text>
+            </View>
           </LinearGradient>
         </TouchableOpacity>
 
-        {/* AI + Financial Services Row */}
-        <View style={styles.rowCards}>
-          <TouchableOpacity style={styles.aiCard} onPress={() => navigation.navigate('AISupport')}>
-            <LinearGradient colors={['#1A237E', '#283593']} style={styles.miniGrad}>
-              <Text style={styles.miniIcon}>🤖</Text>
-              <Text style={styles.miniTitle}>AI Assistant</Text>
-              <Text style={styles.miniSub}>Ask anything</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.finCard} onPress={() => navigation.navigate('FundingDetail', { type: 'financial' })}>
-            <LinearGradient colors={['#0D9E87', '#0A7163']} style={styles.miniGrad}>
-              <Text style={styles.miniIcon}>🛡️</Text>
-              <Text style={styles.miniTitle}>Financial\nServices</Text>
-              <Text style={styles.miniSub}>Insurance & Grants</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+        {/* AI Assistant Hook */}
+        <TouchableOpacity 
+          style={styles.aiHint} 
+          onPress={() => navigation.navigate('AISupport')}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={[COLORS.accent, '#2563EB']}
+            style={styles.aiGrad}
+          >
+            <Text style={{ fontSize: 20 }}>🤖</Text>
+            <Text style={styles.aiText}>Ask Sumbandila AI anything...</Text>
+            <View style={styles.aiGo}>
+              <Text style={styles.aiGoText}>Chat</Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
 
-        {/* Recent Verifications */}
-        <View style={styles.section}>
-          <View style={styles.sectionRow}>
-            <Text style={styles.sectionTitle}>RECENT VERIFICATIONS</Text>
-            <TouchableOpacity><Text style={styles.seeAll}>See all ›</Text></TouchableOpacity>
-          </View>
-          {[
-            { name: 'St Stithians College', type: 'Education', status: 'VERIFIED', icon: '🎓' },
-            { name: 'Dr. Sipho Nkosi', type: 'Medical', status: 'VERIFIED', icon: '🩺' },
-            { name: 'Adv. Zanele Mokoena', type: 'Legal', status: 'UNABLE TO VERIFY', icon: '⚖️' },
-          ].map((item, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={styles.recentCard}
-              onPress={() => navigation.navigate('VerificationResult', { name: item.name, type: item.type, status: item.status })}
-            >
-              <View style={styles.recentLeft}>
-                <View style={styles.recentIconBox}><Text style={{ fontSize: 20 }}>{item.icon}</Text></View>
-                <View>
-                  <Text style={styles.recentName}>{item.name}</Text>
-                  <Text style={styles.recentType}>{item.type}</Text>
-                </View>
-              </View>
-              <View style={[styles.statusBadge, { backgroundColor: item.status === 'VERIFIED' ? '#D5F5E3' : '#FDEDEC' }]}>
-                <Text style={[styles.statusText, { color: item.status === 'VERIFIED' ? '#27AE60' : '#E74C3C' }]}>
-                  {item.status === 'VERIFIED' ? '✓' : '✗'} {item.status}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View style={{ height: 30 }} />
       </ScrollView>
     </View>
   );
@@ -202,57 +210,111 @@ export default function DashboardScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
-  header: { paddingTop: 52, paddingBottom: SPACING.lg, paddingHorizontal: SPACING.lg, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  greeting: { color: 'rgba(255,255,255,0.65)', fontSize: 12 },
-  headerTitle: { color: '#fff', fontSize: 22, fontWeight: '800' },
-  headerIcons: { flexDirection: 'row', gap: 8 },
-  iconBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.15)', justifyContent: 'center', alignItems: 'center' },
-  iconText: { fontSize: 17 },
-  badge: { position: 'absolute', top: -4, right: -4, width: 16, height: 16, borderRadius: 8, backgroundColor: COLORS.danger, justifyContent: 'center', alignItems: 'center' },
-  badgeText: { color: '#fff', fontSize: 8, fontWeight: '700' },
-  searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: RADIUS.full, paddingHorizontal: 14, paddingVertical: 9, gap: 8 },
-  searchIcon: { fontSize: 15 },
-  searchInput: { flex: 1, color: '#fff', fontSize: 13 },
-  body: { flex: 1, paddingHorizontal: SPACING.md, paddingTop: SPACING.sm },
-  section: { marginBottom: SPACING.md },
-  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  sectionTitle: { fontSize: 11, fontWeight: '800', color: COLORS.textLight, letterSpacing: 1.5, marginBottom: 8 },
-  seeAll: { fontSize: 12, color: COLORS.accent, fontWeight: '600' },
-  topBanner: { borderRadius: RADIUS.lg, overflow: 'hidden', marginBottom: 12, ...SHADOW.small },
-  topBannerGrad: { paddingVertical: 10, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  topBannerStar: { fontSize: 16 },
-  topBannerText: { flex: 1, color: '#fff', fontSize: 12 },
-  verifyCard: { backgroundColor: '#fff', borderRadius: RADIUS.lg, padding: 12, alignItems: 'center', marginRight: 10, width: 86, ...SHADOW.small },
-  newBadge: { position: 'absolute', top: -6, right: -6, backgroundColor: COLORS.danger, borderRadius: 8, paddingHorizontal: 5, paddingVertical: 2, zIndex: 1 },
-  newText: { color: '#fff', fontSize: 8, fontWeight: '900', letterSpacing: 0.5 },
-  verifyIconBox: { width: 48, height: 48, borderRadius: 13, justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
-  verifyIcon: { fontSize: 22 },
-  verifyLabel: { fontSize: 10.5, fontWeight: '600', color: COLORS.text, textAlign: 'center' },
-  oppGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
-  oppCard: { backgroundColor: '#fff', borderRadius: RADIUS.lg, padding: 12, width: (width - SPACING.md * 2 - 18) / 3, ...SHADOW.small, minHeight: 105 },
-  newBadgeCard: { position: 'absolute', top: 6, right: 6, backgroundColor: COLORS.danger, borderRadius: 6, paddingHorizontal: 4, paddingVertical: 2 },
-  oppIcon: { width: 42, height: 42, borderRadius: 11, justifyContent: 'center', alignItems: 'center', marginBottom: 7 },
-  oppLabel: { fontSize: 10.5, fontWeight: '700', color: COLORS.text, lineHeight: 14 },
-  oppLogos: { fontSize: 9, color: COLORS.textLight, marginTop: 2, fontWeight: '600' },
-  proBanner: { borderRadius: RADIUS.xl, overflow: 'hidden', marginBottom: SPACING.md, ...SHADOW.medium },
-  proBannerGrad: { padding: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  proLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  proCrown: { fontSize: 28 },
-  proTitle: { color: '#fff', fontSize: 15, fontWeight: '800' },
-  proSub: { color: COLORS.secondary, fontSize: 11, marginTop: 2 },
-  rowCards: { flexDirection: 'row', gap: 10, marginBottom: SPACING.md },
-  aiCard: { flex: 1, borderRadius: RADIUS.lg, overflow: 'hidden', ...SHADOW.small },
-  finCard: { flex: 1, borderRadius: RADIUS.lg, overflow: 'hidden', ...SHADOW.small },
-  miniGrad: { padding: SPACING.md, alignItems: 'center', minHeight: 90, justifyContent: 'center' },
-  miniIcon: { fontSize: 26, marginBottom: 6 },
-  miniTitle: { color: '#fff', fontSize: 13, fontWeight: '800', textAlign: 'center' },
-  miniSub: { color: 'rgba(255,255,255,0.7)', fontSize: 10, marginTop: 2, textAlign: 'center' },
-  recentCard: { backgroundColor: '#fff', borderRadius: RADIUS.md, padding: 13, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, ...SHADOW.small },
-  recentLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  recentIconBox: { width: 40, height: 40, borderRadius: 11, backgroundColor: COLORS.background, justifyContent: 'center', alignItems: 'center' },
-  recentName: { fontSize: 13, fontWeight: '600', color: COLORS.text },
-  recentType: { fontSize: 11, color: COLORS.textLight },
-  statusBadge: { borderRadius: RADIUS.full, paddingHorizontal: 9, paddingVertical: 4 },
-  statusText: { fontSize: 10, fontWeight: '700' },
+  header: {
+    paddingTop: 60,
+    paddingBottom: 25,
+    paddingHorizontal: SPACING.lg,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    ...SHADOW.large,
+  },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  greeting: { color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: '600' },
+  headerTitle: { color: '#fff', fontSize: 26, fontWeight: '900', letterSpacing: -0.5 },
+  headerIcons: { flexDirection: 'row', gap: 10 },
+  iconBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconText: { fontSize: 18 },
+  badge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: COLORS.danger,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: { color: '#fff', fontSize: 8, fontWeight: '900' },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: RADIUS.md,
+    paddingHorizontal: 15,
+    height: 52,
+  },
+  searchIcon: { fontSize: 16, marginRight: 10 },
+  searchInput: { flex: 1, color: '#fff', fontSize: 15, fontWeight: '500' },
+  body: { flex: 1, paddingHorizontal: SPACING.lg, paddingTop: 24 },
+  section: { marginBottom: 32 },
+  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  sectionTitle: { fontSize: 12, fontWeight: '900', color: COLORS.textMuted, letterSpacing: 1.5 },
+  seeAll: { fontSize: 13, color: COLORS.accent, fontWeight: '700' },
+  horizontalScroll: { marginHorizontal: -SPACING.lg, paddingHorizontal: SPACING.lg },
+  verifyCard: { marginRight: 18, alignItems: 'center', width: 85 },
+  verifyIconBox: {
+    width: 68,
+    height: 68,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    ...SHADOW.small,
+  },
+  verifyIcon: { fontSize: 30 },
+  verifyLabel: { fontSize: 11, fontWeight: '800', color: COLORS.text, textAlign: 'center' },
+  newTag: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: COLORS.danger,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  newTagText: { color: '#fff', fontSize: 8, fontWeight: '900' },
+  mainBanner: { borderRadius: RADIUS.lg, overflow: 'hidden', marginBottom: 32, ...SHADOW.medium },
+  mainBannerGrad: { padding: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  bannerContent: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  bannerIconBox: { width: 52, height: 52, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
+  bannerTitle: { color: '#fff', fontSize: 17, fontWeight: '800' },
+  bannerSub: { color: 'rgba(255,255,255,0.85)', fontSize: 13, marginTop: 2 },
+  bannerArrow: { color: '#fff', fontSize: 24, opacity: 0.8 },
+  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between' },
+  gridCard: {
+    width: (width - SPACING.lg * 2 - 12) / 2,
+    backgroundColor: '#fff',
+    borderRadius: RADIUS.md,
+    padding: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    ...SHADOW.small,
+  },
+  gridIconCircle: { width: 44, height: 44, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
+  gridTextContent: { flex: 1 },
+  gridLabel: { fontSize: 13, fontWeight: '800', color: COLORS.text, lineHeight: 16 },
+  gridSubText: { fontSize: 10, color: COLORS.textMuted, marginTop: 2 },
+  proCard: { borderRadius: RADIUS.lg, overflow: 'hidden', marginBottom: 24, ...SHADOW.medium },
+  proGrad: { padding: 24, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  proTitle: { color: '#fff', fontSize: 19, fontWeight: '900' },
+  proSubtitle: { color: COLORS.secondary, fontSize: 14, marginTop: 4, fontWeight: '600' },
+  proBadge: { alignItems: 'flex-end' },
+  proPrice: { color: '#fff', fontSize: 22, fontWeight: '900' },
+  proMonth: { color: 'rgba(255,255,255,0.6)', fontSize: 11 },
+  aiHint: { borderRadius: RADIUS.md, overflow: 'hidden', ...SHADOW.small },
+  aiGrad: { padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  aiText: { flex: 1, color: '#fff', fontSize: 15, fontWeight: '700' },
+  aiGo: { backgroundColor: '#fff', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
+  aiGoText: { color: COLORS.accent, fontWeight: '800', fontSize: 13 },
 });
