@@ -40,6 +40,9 @@ async def get_user_from_jwt(authorization: str = Header(None)):
     
     token = authorization.replace("Bearer ", "")
     try:
+        if not supabase:
+            raise HTTPException(status_code=503, detail="Supabase not configured on backend")
+            
         # Verify user session via Supabase Auth
         res = supabase.auth.get_user(token)
         if not res or not res.user:
@@ -51,12 +54,21 @@ async def get_user_from_jwt(authorization: str = Header(None)):
 # Supabase Client Initialization
 url: str = os.environ.get("SUPABASE_URL", "")
 key: str = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-if not url or not key:
-    print("❌ ERROR: Supabase credentials missing from .env")
 
-supabase: Client = create_client(url, key)
+# Graceful check for Phase 4 startup
+supabase = None
+if not url or "your_supabase" in url:
+    print("⚠️ CRITICAL: SUPABASE_URL is missing or still using 'your_supabase_url_here' placeholder in .env")
+elif not key or "your_supabase" in key:
+    print("⚠️ CRITICAL: SUPABASE_SERVICE_ROLE_KEY is missing or still using 'your_supabase_...' placeholder in .env")
+else:
+    try:
+        supabase: Client = create_client(url, key)
+        print("✅ Supabase Logic Engine: Connection Established")
+    except Exception as e:
+        print(f"❌ Supabase Connection Failed: {str(e)}")
 
-# Initialize Logic Adapters
+# Initialize Logic Adapters (Move inside a check if needed, but let's keep them accessible)
 adapters = {
     "up": UPAdapter(),
     "uct": UCTAdapter(),
@@ -81,6 +93,9 @@ async def detect_fraud_patterns(user_id: str):
     Phase 3/4: Logic Engine for detecting suspicious activity.
     """
     try:
+        if not supabase:
+            return {"user_id": user_id, "fraud_score": 0.0, "recommendation": "LOGIC_BYPASSED"}
+            
         response = supabase.table("verifications")\
             .select("status")\
             .eq("user_id", user_id)\
@@ -135,16 +150,17 @@ async def verify_institutional_data(
     result = adapter.verify(reg_number)
     
     # 💾 Audit Logging
-    try:
-        supabase.table("verifications").insert({
-            "user_id": user_id,
-            "institution": institution,
-            "registration_number": reg_number,
-            "status": result.get("status", "UNKNOWN"),
-            "payload": result
-        }).execute()
-    except Exception as e:
-        print(f"⚠️ Audit Log Error: {str(e)}")
+    if supabase:
+        try:
+            supabase.table("verifications").insert({
+                "user_id": user_id,
+                "institution": institution,
+                "registration_number": reg_number,
+                "status": result.get("status", "UNKNOWN"),
+                "payload": result
+            }).execute()
+        except Exception as e:
+            print(f"⚠️ Audit Log Error: {str(e)}")
 
     return result
 
