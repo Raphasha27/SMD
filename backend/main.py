@@ -1,84 +1,88 @@
 import os
 import sys
+import time
 from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi.middleware.cors import CORSMiddleware
+from supabase import create_client, Client
 
 # Ensure the 'backend' directory is in the python path for absolute imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from supabase import create_client, Client
+# Import Institutional Adapters
 try:
     from adapters.up_adapter import UPAdapter
     from adapters.uct_adapter import UCTAdapter
     from adapters.saqa_adapter import SAQAAdapter
 except ImportError:
+    # Fallback for environments where the root is different
     from backend.adapters.up_adapter import UPAdapter
     from backend.adapters.uct_adapter import UCTAdapter
     from backend.adapters.saqa_adapter import SAQAAdapter
 
-from fastapi import Header
-
 load_dotenv()
 
-app = FastAPI(title="Sumbandila Hybrid Logic Engine")
+app = FastAPI(title="Sumbandila Hybrid Logic Engine - Phase 4")
 
-# X-API-Key for Backend Security
-API_KEY = os.environ.get("BACKEND_API_KEY", "sumbandila_master_key_2026")
-
-# CORS and Security
+# CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Expand to specific domains in Prod
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-async def verify_api_key(api_key: str = Depends(lambda x: x)):
-    # Simple header-based key check
-    pass # We will use a more standard FastAPI Depend below
+# Authentication Dependency (Phase 4: JWT)
+async def get_user_from_jwt(authorization: str = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing Authorization Header")
+    
+    token = authorization.replace("Bearer ", "")
+    try:
+        # Verify user session via Supabase Auth
+        res = supabase.auth.get_user(token)
+        if not res or not res.user:
+            raise HTTPException(status_code=401, detail="Invalid or expired session")
+        return res.user
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Authentication Failure: {str(e)}")
 
 # Supabase Client Initialization
 url: str = os.environ.get("SUPABASE_URL", "")
-key: str = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "") # Sensitive
+key: str = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 if not url or not key:
-    print("⚠️ WARNING: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not found in environment.")
+    print("❌ ERROR: Supabase credentials missing from .env")
 
 supabase: Client = create_client(url, key)
 
-# Initialize Adapters
+# Initialize Logic Adapters
 adapters = {
     "up": UPAdapter(),
     "uct": UCTAdapter(),
     "saqa": SAQAAdapter()
 }
 
+# Rate Limiting Store
+rate_limits = {}
+
 @app.get("/")
 async def health_check():
-    return {"status": "online", "platform": "Sumbandila DPVI", "version": "1.0.0"}
-
-@app.get("/stats/verifications")
-async def get_verification_stats():
-    """
-    Fetch global verification statistics for the admin dashboard.
-    """
-    try:
-        response = supabase.table("verifications").select("status", count="exact").execute()
-        return {"data": response.data, "count": response.count}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return {
+        "status": "online", 
+        "platform": "Sumbandila DPVI", 
+        "phase": 4, 
+        "security": "JWT_ENABLED"
+    }
 
 @app.post("/fraud/detect")
 async def detect_fraud_patterns(user_id: str):
     """
-    Phase 3: Logic Engine for detecting suspicious activity.
-    Checks for high-volume searches or conflicting registration data.
+    Phase 3/4: Logic Engine for detecting suspicious activity.
     """
     try:
-        # Fetch last 50 verifications for this user
         response = supabase.table("verifications")\
-            .select("registration_number", "status")\
+            .select("status")\
             .eq("user_id", user_id)\
             .order("created_at", { "ascending": False })\
             .limit(50)\
@@ -88,9 +92,7 @@ async def detect_fraud_patterns(user_id: str):
         if not history:
             return {"user_id": user_id, "fraud_score": 0.0, "recommendation": "LOW_RISK"}
 
-        # Logic: If more than 5 failed verifications in 24h, flag for review
         failed_count = sum(1 for v in history if v.get("status") == "NOT_FOUND")
-        
         fraud_score = (failed_count / 10.0) if failed_count < 10 else 1.0
         recommendation = "HIGH_RISK" if fraud_score > 0.6 else "MEDIUM_RISK" if fraud_score > 0.3 else "LOW_RISK"
 
@@ -101,39 +103,48 @@ async def detect_fraud_patterns(user_id: str):
             "failed_attempts": failed_count
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Fraud Check Error: {str(e)}")
 
 @app.get("/verify/education/{institution}")
 async def verify_institutional_data(
     institution: str, 
     reg_number: str, 
-    requester_id: str = "anonymous",
-    x_api_key: str = Header(None)
+    user: dict = Depends(get_user_from_jwt)
 ):
     """
-    Route verification requests to the specific institutional adapter.
-    Requires X-API-Key header for security.
+    Core Verification Engine with Phase 4 Security (JWT + Rate Limiting).
     """
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=403, detail="Unauthorized: Invalid API Key")
+    user_id = user.id if hasattr(user, 'id') else user.get('id')
+    
+    # 🚦 Rate Limiting (20 checks/hour)
+    now = time.time()
+    user_requests = rate_limits.get(user_id, [])
+    user_requests = [t for t in user_requests if now - t < 3600]
+    
+    if len(user_requests) >= 20:
+        raise HTTPException(status_code=429, detail="Verification limit reached. Please try again in an hour.")
+    
+    user_requests.append(now)
+    rate_limits[user_id] = user_requests
 
+    # 🔍 Verification Logic
     adapter = adapters.get(institution.lower())
     if not adapter:
         raise HTTPException(status_code=404, detail="Institution adapter not found")
     
     result = adapter.verify(reg_number)
     
-    # NEW: Persist to Supabase
+    # 💾 Audit Logging
     try:
         supabase.table("verifications").insert({
-            "user_id": requester_id,
+            "user_id": user_id,
             "institution": institution,
             "registration_number": reg_number,
-            "status": result.get("status"),
-            "data_payload": result
+            "status": result.get("status", "UNKNOWN"),
+            "payload": result
         }).execute()
     except Exception as e:
-        print(f"⚠️ Failed to log verification to Supabase: {str(e)}")
+        print(f"⚠️ Audit Log Error: {str(e)}")
 
     return result
 
