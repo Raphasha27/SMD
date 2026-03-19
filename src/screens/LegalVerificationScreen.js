@@ -55,6 +55,21 @@ export default function LegalVerificationScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
+        {/* QR Scanner */}
+        <TouchableOpacity
+          style={styles.qrCard}
+          onPress={() => navigation.navigate('QRScanner')}
+        >
+          <View style={styles.qrIconBox}>
+            <Text style={{ fontSize: 32 }}>📷</Text>
+          </View>
+          <View>
+            <Text style={styles.qrTitle}>SCAN QR CERTIFICATE</Text>
+            <Text style={styles.qrSub}>Instantly verify using QR code</Text>
+          </View>
+          <Text style={styles.qrArrow}>›</Text>
+        </TouchableOpacity>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>SAMPLE PRACTITIONERS</Text>
           {SAMPLE_LAWYERS.map((l, idx) => (
@@ -89,6 +104,15 @@ const styles = StyleSheet.create({
   verifyBtn: { borderRadius: RADIUS.md, overflow: 'hidden', marginTop: SPACING.lg },
   verifyGradient: { paddingVertical: 14, alignItems: 'center' },
   verifyText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  qrCard: {
+    backgroundColor: '#fff', borderRadius: RADIUS.xl, padding: SPACING.lg,
+    flexDirection: 'row', alignItems: 'center', gap: 14, ...SHADOW.small,
+    marginBottom: SPACING.md, borderWidth: 2, borderColor: '#8E44AD30',
+  },
+  qrIconBox: { width: 60, height: 60, borderRadius: 16, backgroundColor: COLORS.background, justifyContent: 'center', alignItems: 'center' },
+  qrTitle: { fontSize: 14, fontWeight: '800', color: '#8E44AD', letterSpacing: 0.5 },
+  qrSub: { fontSize: 12, color: COLORS.textLight, marginTop: 2 },
+  qrArrow: { fontSize: 24, color: '#8E44AD', fontWeight: '800' },
   section: { marginBottom: SPACING.lg },
   sectionTitle: { fontSize: 12, fontWeight: '800', color: COLORS.textLight, letterSpacing: 1.5, marginBottom: SPACING.sm },
   quickItem: { backgroundColor: '#fff', borderRadius: RADIUS.md, padding: SPACING.md, flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8, ...SHADOW.small },

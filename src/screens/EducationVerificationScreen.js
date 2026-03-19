@@ -102,7 +102,7 @@ export default function EducationVerificationScreen({ navigation }) {
         {/* QR Scanner */}
         <TouchableOpacity
           style={styles.qrCard}
-          onPress={() => Alert.alert('QR Scanner', 'Point camera at certificate QR code to verify instantly.')}
+          onPress={() => navigation.navigate('QRScanner')}
         >
           <View style={styles.qrIconBox}>
             <Text style={{ fontSize: 32 }}>📷</Text>

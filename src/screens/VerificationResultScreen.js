@@ -52,6 +52,12 @@ export default function VerificationResultScreen({ navigation, route }) {
       </LinearGradient>
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+        {/* Pilot Mode Banner */}
+        <View style={styles.pilotBanner}>
+          <Text style={styles.pilotBannerText}>🚀 PILOT MODE ENABLED</Text>
+          <Text style={styles.pilotBannerSub}>Verification logic in test phase for Phase 1</Text>
+        </View>
+
         {/* Status Badge */}
         <Animated.View style={[styles.statusCard, { transform: [{ scale: scaleAnim }], opacity: fadeAnim }]}>
           <View style={[styles.statusBadge, { backgroundColor: isVerified ? '#D5F5E3' : '#FDEDEC' }]}>
@@ -104,10 +110,10 @@ export default function VerificationResultScreen({ navigation, route }) {
             </TouchableOpacity>
             {!isVerified && (
               <TouchableOpacity
-                style={styles.reportBtn}
-                onPress={() => navigation.goBack()}
+                style={styles.evidenceBtn}
+                onPress={() => navigation.navigate('DocumentUpload', { type, entityName: name })}
               >
-                <Text style={styles.reportText}>🚩 Report Issue</Text>
+                <Text style={styles.evidenceText}>📄 Submit Evidence</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -119,6 +125,11 @@ export default function VerificationResultScreen({ navigation, route }) {
             ✅ Verified against official South African government databases
           </Text>
           <Text style={styles.footerSub}>Last updated: {new Date().toLocaleDateString('en-ZA')}</Text>
+          <View style={styles.pilotDisclaimer}>
+            <Text style={styles.pilotDisclaimerText}>
+              DISCLAIMER: This verification is part of a Phase 1 Pilot. Data accuracy depends on partner registry stability.
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -161,9 +172,14 @@ const styles = StyleSheet.create({
   shareBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.primary, borderRadius: RADIUS.md, paddingVertical: 12, gap: 6 },
   shareIcon: { fontSize: 16 },
   shareText: { color: '#fff', fontWeight: '700', fontSize: 14 },
-  reportBtn: { flex: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.danger, borderRadius: RADIUS.md, paddingVertical: 12 },
-  reportText: { color: COLORS.danger, fontWeight: '700', fontSize: 14 },
+  evidenceBtn: { flex: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.accent, borderRadius: RADIUS.md, paddingVertical: 12 },
+  evidenceText: { color: COLORS.accent, fontWeight: '700', fontSize: 13 },
   footer: { alignItems: 'center', padding: SPACING.lg },
   footerText: { fontSize: 13, color: COLORS.textLight, textAlign: 'center', marginBottom: 4 },
   footerSub: { fontSize: 12, color: COLORS.textMuted },
+  pilotBanner: { backgroundColor: COLORS.accent, borderRadius: RADIUS.md, padding: 12, marginBottom: 15, alignItems: 'center', borderLeftWidth: 4, borderLeftColor: COLORS.primary },
+  pilotBannerText: { color: COLORS.primary, fontWeight: '900', fontSize: 14, letterSpacing: 1 },
+  pilotBannerSub: { color: COLORS.primary, fontSize: 11, opacity: 0.8 },
+  pilotDisclaimer: { marginTop: 15, padding: 10, backgroundColor: '#FEF9E7', borderRadius: RADIUS.sm, borderWidth: 1, borderColor: '#F9E79F' },
+  pilotDisclaimerText: { fontSize: 10, color: '#7D6608', textAlign: 'center', fontWeight: '600' },
 });

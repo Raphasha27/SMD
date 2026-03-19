@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SPACING, RADIUS, SHADOW } from '../theme/colors';
+import { useAuth } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
@@ -26,12 +27,13 @@ const opportunityCards = [
 
 export default function DashboardScreen({ navigation }) {
   const [search, setSearch] = useState('');
+  const { user } = useAuth();
 
   const navigate = (screen) => {
     if (screen === 'CareerHubDirect') {
-      navigation.getParent()?.navigate('Career Hub');
+      navigation.navigate('Career Hub');
     } else if (screen === 'Support') {
-      navigation.getParent()?.navigate('Biz Tools');
+      navigation.navigate('Biz Tools');
     } else {
       navigation.navigate(screen);
     }
@@ -50,7 +52,7 @@ export default function DashboardScreen({ navigation }) {
       >
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.greeting}>Welcome back ✨</Text>
+            <Text style={styles.greeting}>Welcome back {user?.user_metadata?.full_name || '✨'}</Text>
             <Text style={styles.headerTitle}>Sumbandila Hub</Text>
           </View>
           <View style={styles.headerIcons}>
@@ -119,7 +121,7 @@ export default function DashboardScreen({ navigation }) {
         {/* Highlighted Opportunity Banner */}
         <TouchableOpacity 
           style={styles.mainBanner} 
-          onPress={() => navigation.getParent()?.navigate('Career Hub')}
+          onPress={() => navigation.navigate('Career Hub')}
           activeOpacity={0.9}
         >
           <LinearGradient

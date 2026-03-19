@@ -1,10 +1,15 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AuthProvider } from './src/context/AuthContext';
 
 import SplashScreen         from './src/screens/SplashScreen';
 import LoginScreen          from './src/screens/LoginScreen';
+import SignupScreen         from './src/screens/SignupScreen';
 import MainTabs             from './src/navigation/MainTabs';
+import TrustCenterScreen    from './src/screens/TrustCenterScreen';
+import AdminScreen          from './src/screens/AdminScreen';
+import QRScannerScreen      from './src/screens/QRScannerScreen';
 
 // Verification
 import VerificationSelectionScreen from './src/screens/VerificationSelectionScreen';
@@ -12,6 +17,7 @@ import EducationVerificationScreen from './src/screens/EducationVerificationScre
 import MedicalVerificationScreen   from './src/screens/MedicalVerificationScreen';
 import LegalVerificationScreen     from './src/screens/LegalVerificationScreen';
 import VerificationResultScreen    from './src/screens/VerificationResultScreen';
+import DocumentUploadScreen       from './src/screens/DocumentUploadScreen';
 
 // Support & Funding
 import SupportHubScreen         from './src/screens/SupportHubScreen';
@@ -35,13 +41,15 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
       >
         <Stack.Screen name="Splash"   component={SplashScreen} />
         <Stack.Screen name="Login"    component={LoginScreen} />
+        <Stack.Screen name="Signup"   component={SignupScreen} />
         <Stack.Screen name="Main"     component={MainTabs} />
 
         {/* Verification */}
@@ -50,6 +58,7 @@ export default function App() {
         <Stack.Screen name="MedicalVerification"   component={MedicalVerificationScreen} />
         <Stack.Screen name="LegalVerification"     component={LegalVerificationScreen} />
         <Stack.Screen name="VerificationResult"    component={VerificationResultScreen} />
+        <Stack.Screen name="DocumentUpload"        component={DocumentUploadScreen} />
 
         {/* Support & Funding */}
         <Stack.Screen name="Support"            component={SupportHubScreen} />
@@ -68,7 +77,17 @@ export default function App() {
 
         {/* Subscription */}
         <Stack.Screen name="Subscription" component={SubscriptionScreen} />
+
+        {/* Legal & Trust */}
+        <Stack.Screen name="TrustCenter" component={TrustCenterScreen} />
+
+        {/* Administration */}
+        <Stack.Screen name="Admin" component={AdminScreen} />
+
+        {/* Utilities */}
+        <Stack.Screen name="QRScanner" component={QRScannerScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
-    </NavigationContainer>
+      </NavigationContainer>
+    </AuthProvider>
   );
 }

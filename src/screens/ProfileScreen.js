@@ -175,8 +175,8 @@ export default function ProfileScreen({ navigation }) {
                 { icon: '📋', label: 'Verification History', screen: 'VerificationSelection' },
                 { icon: '💰', label: 'Funding Applications', screen: 'ApplicationTracker' },
                 { icon: '🏅', label: 'My Digital Badges', screen: 'VendorDirectory' },
+                { icon: '🛡️', label: 'Trust & Compliance', screen: 'TrustCenter' },
                 { icon: '🎓', label: 'Accredited Learning', screen: 'AccreditedTraining' },
-                { icon: '🤝', label: 'Mentorship Sessions', screen: 'Mentorship' },
               ].map((item, idx) => (
                 <TouchableOpacity
                   key={idx}
@@ -245,10 +245,18 @@ export default function ProfileScreen({ navigation }) {
             </View>
 
             <View style={styles.settingsSection}>
-              <Text style={styles.sectionTitle}>LEGAL</Text>
-              {['Terms of Service', 'Privacy Policy', 'POPIA Compliance'].map((item, idx) => (
-                <TouchableOpacity key={idx} style={styles.settingRowBtn}>
-                  <Text style={styles.settingLabel}>{item}</Text>
+              <Text style={styles.sectionTitle}>LEGAL & TRUST</Text>
+              {[
+                { label: 'Trust Center', screen: 'TrustCenter' },
+                { label: 'Privacy Policy', screen: 'TrustCenter' },
+                { label: 'Terms of Service', screen: 'TrustCenter' },
+              ].map((item, idx) => (
+                <TouchableOpacity 
+                  key={idx} 
+                  style={styles.settingRowBtn}
+                  onPress={() => navigation.navigate(item.screen)}
+                >
+                  <Text style={styles.settingLabel}>{item.label}</Text>
                   <Text style={{ color: COLORS.textMuted }}>›</Text>
                 </TouchableOpacity>
               ))}

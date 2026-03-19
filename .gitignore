@@ -67,3 +67,12 @@ Thumbs.db
 # ========================
 logs/
 *.log
+
+# ========================
+# VIRTUAL ENVIRONMENT
+# ========================
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc

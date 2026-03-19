@@ -62,6 +62,13 @@ export default function VerificationSelectionScreen({ navigation }) {
             All verifications are cross-referenced with official South African government databases including DOE, HPCSA, SAQA, and Law Society registers.
           </Text>
         </View>
+
+        <TouchableOpacity 
+          style={styles.trustLink}
+          onPress={() => navigation.navigate('TrustCenter')}
+        >
+          <Text style={styles.trustLinkText}>Learn more about our trust methodology ›</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -97,4 +104,6 @@ const styles = StyleSheet.create({
   },
   infoIcon: { fontSize: 18 },
   infoText: { flex: 1, fontSize: 13, color: COLORS.textLight, lineHeight: 20 },
+  trustLink: { marginTop: 24, alignItems: 'center', paddingBottom: 40 },
+  trustLinkText: { color: COLORS.primary, fontWeight: '700', fontSize: 13, textDecorationLine: 'underline' },
 });

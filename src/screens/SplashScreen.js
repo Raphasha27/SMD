@@ -5,15 +5,15 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SPACING, RADIUS, SHADOW } from '../theme/colors';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function SplashScreen({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const slideAnim = useRef(new Animated.Value(40)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // Stick to native driver for performance, avoid layout (width) animations
     Animated.parallel([
       Animated.timing(fadeAnim, { 
         toValue: 1, 
@@ -82,12 +82,8 @@ export default function SplashScreen({ navigation }) {
             <Text style={styles.footerText}>Secure • Transparent • Verified</Text>
             <View style={styles.loadingContainer}>
               <View style={styles.loadingTrack}>
-                <Animated.View style={[styles.loadingBar, {
-                  width: fadeAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0%', '100%']
-                  })
-                }]} />
+                {/* Static progress bar to avoid "width" animation errors */}
+                <View style={[styles.loadingBar, { width: '100%' }]} />
               </View>
             </View>
           </View>
