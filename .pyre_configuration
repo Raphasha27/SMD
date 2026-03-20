@@ -1,9 +1,9 @@
 {
   "source_directories": [
-    "backend",
-    "scripts"
+    "c:\\Users\\nelso\\OneDrive\\Desktop\\SDM\\scripts",
+    "c:\\Users\\nelso\\OneDrive\\Desktop\\SDM\\backend-python"
   ],
   "search_path": [
-    ".venv/Lib/site-packages"
+    "c:\\Users\\nelso\\OneDrive\\Desktop\\SDM\\.venv\\Lib\\site-packages"
   ]
 }
