@@ -18,7 +18,7 @@ import MedicalVerificationScreen   from './src/screens/MedicalVerificationScreen
 import LegalVerificationScreen     from './src/screens/LegalVerificationScreen';
 import VerificationResultScreen    from './src/screens/VerificationResultScreen';
 import DocumentUploadScreen       from './src/screens/DocumentUploadScreen';
-import SubscriptionScreen         from './src/screens/SubscriptionScreen';
+import SubscriptionScreen from './src/screens/SubscriptionScreen';
 
 // Support & Funding
 import SupportHubScreen         from './src/screens/SupportHubScreen';
@@ -35,9 +35,7 @@ import B2BProcurementScreen  from './src/screens/B2BProcurementScreen';
 import VendorDirectoryScreen  from './src/screens/VendorDirectoryScreen';
 import ComplianceScreen       from './src/screens/ComplianceScreen';
 
-// Subscription
-import SubscriptionScreen from './src/screens/SubscriptionScreen';
-
+// Navigator Logic
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -76,9 +74,6 @@ export default function App() {
         <Stack.Screen name="B2BProcurement"  component={B2BProcurementScreen} />
         <Stack.Screen name="VendorDirectory" component={VendorDirectoryScreen} />
         <Stack.Screen name="Compliance"      component={ComplianceScreen} />
-
-        {/* Subscription */}
-        <Stack.Screen name="Subscription" component={SubscriptionScreen} />
 
         {/* Legal & Trust */}
         <Stack.Screen name="TrustCenter" component={TrustCenterScreen} />

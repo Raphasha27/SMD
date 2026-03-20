@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { COLORS, SPACING, RADIUS, SHADOW } from '../theme/colors';
 import { supabase } from '../config/supabase';
+import { useAuth } from '../context/AuthContext';
 
 export default function AdminScreen({ navigation }) {
   const [stats, setStats] = useState({ totalDocs: 0, totalInst: 0, totalVerif: 0 });
   const [logs, setLogs] = useState([]);
   const [manualRequests, setManualRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
-    fetchStats();
-    fetchLogs();
-    fetchManualRequests();
+    fetchAdminData();
 
     // 🏆 Real-time Subscription for Phase 2
     const channel = supabase
@@ -28,47 +28,24 @@ export default function AdminScreen({ navigation }) {
     };
   }, []);
 
-  const fetchStats = async () => {
+  const fetchAdminData = async () => {
     try {
-      const { count: instCount } = await supabase.from('institutions').select('*', { count: 'exact', head: true });
-      const { count: profCount } = await supabase.from('professionals').select('*', { count: 'exact', head: true });
-      const { count: verifCount } = await supabase.from('verifications').select('*', { count: 'exact', head: true });
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/admin/stats`, {
+        headers: { 'Authorization': `Bearer ${user.access_token}` }
+      });
+      const data = await response.json();
+      
+      if (!response.ok) throw new Error(data.error || 'Access Denied');
       
       setStats({
-        totalInst: instCount || 0,
-        totalDocs: profCount || 0,
-        totalVerif: verifCount || 0
+        totalInst: data.total_institutions || 0,
+        totalVerif: data.total_verifications || 0,
+        activePremium: data.active_premium_users || 0
       });
+      setLogs(data.security_alerts || []);
     } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const fetchManualRequests = async () => {
-    try {
-      const { data } = await supabase
-        .from('verification_requests')
-        .select('*')
-        .eq('status', 'PENDING_REVIEW');
-      setManualRequests(data || []);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const fetchLogs = async () => {
-    try {
-      const { data } = await supabase
-        .from('verifications')
-        .select(`
-          *,
-          profiles:user_id ( full_name )
-        `)
-        .order('created_at', { ascending: false })
-        .limit(20);
-      setLogs(data || []);
-    } catch (e) {
-      console.error(e);
+      Alert.alert("Admin Error", e.message);
+      navigation.goBack();
     } finally {
       setLoading(false);
     }
@@ -107,12 +84,12 @@ export default function AdminScreen({ navigation }) {
             <Text style={styles.statLabel}>Colleges</Text>
           </View>
           <View style={[styles.statCard, { borderLeftColor: '#27AE60' }]}>
-            <Text style={styles.statVal}>{stats.totalDocs}</Text>
-            <Text style={styles.statLabel}>Pros</Text>
+            <Text style={styles.statVal}>{stats.activePremium}</Text>
+            <Text style={styles.statLabel}>Premium Pros</Text>
           </View>
           <View style={[styles.statCard, { borderLeftColor: '#F59E0B' }]}>
             <Text style={styles.statVal}>{stats.totalVerif}</Text>
-            <Text style={styles.statLabel}>Verifs</Text>
+            <Text style={styles.statLabel}>Total Verif</Text>
           </View>
         </View>
  

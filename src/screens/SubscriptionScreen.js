@@ -36,17 +36,18 @@ export default function SubscriptionScreen({ navigation }) {
       try {
         if (!user) throw new Error("Please log in to subscribe.");
 
-        // Update user's profile with premium status in Supabase
-        const { error } = await supabase
-          .from('profiles')
-          .update({ 
-            subscription_status: 'PREMIUM',
-            plan_id: plan.id,
-            subscription_expiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-          })
-          .eq('id', user.id);
+        // Call our secure Backend Monetization Engine
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/payment/subscribe`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.access_token}`
+          },
+          body: JSON.stringify({ plan: plan.id })
+        });
 
-        if (error) throw error;
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Payment failed");
 
         setLoading(false);
         Alert.alert(

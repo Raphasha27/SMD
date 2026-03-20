@@ -249,6 +249,48 @@ app.post('/payment/subscribe', authenticateJWT, async (req, res) => {
     }
 });
 
+/**
+ * Admin System Stats (Restricted)
+ */
+app.get('/admin/stats', authenticateJWT, async (req, res) => {
+    const userId = req.user.id;
+    if (!supabase) return res.status(503).json({ error: "Supabase not connected" });
+
+    try {
+        // 🛡️ Check if User is Admin
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('id', userId)
+            .single();
+
+        if (!profile?.is_admin) {
+            return res.status(403).json({ error: "Access Denied: Admins Only" });
+        }
+
+        // 📊 Fetch Global Stats
+        const { count: totalVerifs } = await supabase.from('verifications').select('*', { count: 'exact', head: true });
+        const { count: premiumUsers } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_premium', true);
+        
+        // Fetch recent "High Risk" attempts
+        const { data: alerts } = await supabase
+            .from('verifications')
+            .select('created_at, institution, registration_number, status')
+            .eq('status', 'NOT_FOUND')
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+        res.json({
+            system_status: "Healthy",
+            total_verifications: totalVerifs || 0,
+            active_premium_users: premiumUsers || 0,
+            security_alerts: alerts || []
+        });
+    } catch (error) {
+        res.status(500).json({ error: `Admin fetch failed: ${error.message}` });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Sumbandila Node.js Backend listening on port ${PORT}`);
 });
