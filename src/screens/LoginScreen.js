@@ -40,6 +40,11 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // 🧪 MOCK LOGIN — for web preview & testing only
+  const handleMockLogin = () => {
+    navigation.replace('Main');
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -133,6 +138,14 @@ export default function LoginScreen({ navigation }) {
                 >
                   <Text style={styles.outlineBtnText}>Create Account</Text>
                 </TouchableOpacity>
+
+                {/* 🧪 Test Drive Button - Dev/Preview Only */}
+                <TouchableOpacity
+                  style={styles.mockBtn}
+                  onPress={handleMockLogin}
+                >
+                  <Text style={styles.mockBtnText}>🧪 Test Drive (No Login)</Text>
+                </TouchableOpacity>
               </View>
 
               <Text style={styles.statusFooter}>POPIA Compliant • Secure 256-bit AES</Text>
@@ -209,5 +222,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   outlineBtnText: { color: COLORS.primary, fontWeight: '800', fontSize: 16 },
+  mockBtn: {
+    marginTop: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+    borderStyle: 'dashed',
+  },
+  mockBtnText: { color: '#D97706', fontWeight: '700', fontSize: 14 },
   statusFooter: { color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: '600', marginTop: 40 },
 });
