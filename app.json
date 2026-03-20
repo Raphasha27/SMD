@@ -2,7 +2,7 @@
   "expo": {
     "name": "Sumbandila Pro",
     "slug": "sumbandila-pro",
-    "owner": "Mokoka",
+    "owner": "mokoka",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -42,7 +42,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "sumbandila-sdm-2026"
+        "projectId": "26b84479-2342-41de-8bc4-804bcb22aa69"
       }
     },
     "runtimeVersion": {
