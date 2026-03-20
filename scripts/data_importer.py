@@ -1,5 +1,6 @@
 import csv
 import os
+from typing import Any, Dict
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
@@ -24,7 +25,7 @@ def import_institutions(file_path: str):
     
     with open(file_path, mode='r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
-        records = []
+        records: list[dict[str, Any]] = []
         for row in reader:
             # Type casting for bool
             if 'accredited' in row:
@@ -34,7 +35,8 @@ def import_institutions(file_path: str):
         # Batch insert for performance
         batch_size = 500
         for i in range(0, len(records), batch_size):
-            batch = records[i:i + batch_size]
+            # Use list comprehension to avoid Pyre slicing issues
+            batch = [records[j] for j in range(i, min(i + batch_size, len(records)))]
             try:
                 supabase.table('institutions').insert(batch).execute()
                 print(f"✅ Imported batch {i // batch_size + 1}")
@@ -50,7 +52,7 @@ def import_professionals(file_path: str):
     
     with open(file_path, mode='r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
-        records = []
+        records: list[dict[str, Any]] = []
         for row in reader:
             if 'is_verified' in row:
                 row['is_verified'] = row['is_verified'].lower() == 'true'
@@ -58,7 +60,8 @@ def import_professionals(file_path: str):
             
         batch_size = 500
         for i in range(0, len(records), batch_size):
-            batch = records[i:i + batch_size]
+            # Use list comprehension to avoid Pyre slicing issues
+            batch = [records[j] for j in range(i, min(i + batch_size, len(records)))]
             try:
                 supabase.table('professionals').insert(batch).execute()
                 print(f"✅ Imported batch {i // batch_size + 1}")

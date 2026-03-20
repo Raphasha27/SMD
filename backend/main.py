@@ -10,15 +10,9 @@ from supabase import create_client, Client
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import Institutional Adapters
-try:
-    from adapters.up_adapter import UPAdapter
-    from adapters.uct_adapter import UCTAdapter
-    from adapters.saqa_adapter import SAQAAdapter
-except ImportError:
-    # Fallback for environments where the root is different
-    from backend.adapters.up_adapter import UPAdapter
-    from backend.adapters.uct_adapter import UCTAdapter
-    from backend.adapters.saqa_adapter import SAQAAdapter
+from backend.adapters.up_adapter import UPAdapter
+from backend.adapters.uct_adapter import UCTAdapter
+from backend.adapters.saqa_adapter import SAQAAdapter
 
 load_dotenv()
 
