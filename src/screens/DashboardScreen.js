@@ -1,421 +1,223 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  TextInput, Dimensions, StatusBar, Animated,
+  Dimensions, StatusBar, Animated, Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import LottieView from 'lottie-react-native';
 import { useAuth } from '../context/AuthContext';
+import { useDashboardData } from '../hooks/useDashboardData';
 
 const { width } = Dimensions.get('window');
 
-const DARK = '#0B1220';
-const CARD = '#1E293B';
-const BORDER = '#2D3F55';
-const TEXT = '#F1F5F9';
-const MUTED = '#64748B';
-const BLUE = '#3B82F6';
-const PURPLE = '#8B5CF6';
-const GREEN = '#10B981';
-const AMBER = '#F59E0B';
-const PINK = '#EC4899';
+const DARK_NAVY = '#0B1220';
+const CARD_BG = '#1E293B';
+const BORDER_COLOR = '#2D3F55';
+const TEXT_LIGHT = '#F1F5F9';
+const TEXT_MUTED = '#94A3B8';
+const BRAND_BLUE = '#2563EB';
 
-// ─── Data ───────────────────────────────────────────────
-const categories = [
-  { icon: '🩺', label: 'Doctors',   screen: 'MedicalVerification',    color: GREEN  },
-  { icon: '🎓', label: 'Schools',   screen: 'EducationVerification',   color: BLUE   },
-  { icon: '⚖️', label: 'Lawyers',   screen: 'LegalVerification',       color: PURPLE },
-  { icon: '🏢', label: 'Companies', screen: 'Compliance',              color: AMBER  },
-  { icon: '💼', label: 'Jobs',      screen: 'CareerHubDirect',         color: PINK   },
-  { icon: '📜', label: 'Certs',     screen: 'AccreditedTraining',      color: '#06B6D4' },
-  { icon: '🏅', label: 'Badges',    screen: 'VendorDirectory',         color: '#F97316' },
-  { icon: '🤲', label: 'CSR',       screen: 'Support',                 color: '#14B8A6' },
-];
-
-const featured = [
-  {
-    title: '🔥 Verify Any Professional',
-    sub: 'Trusted by 50,000+ South Africans',
-    cta: 'Verify Now',
-    screen: 'VerificationSelection',
-    colors: [BLUE, PURPLE],
-  },
-  {
-    title: '💎 Go Premium Today',
-    sub: 'Unlimited verifications & tools',
-    cta: 'R149/mo',
-    screen: 'Subscription',
-    colors: ['#059669', '#10B981'],
-  },
-  {
-    title: '🤖 Ask Sumbandila AI',
-    sub: 'Your personal verification assistant',
-    cta: 'Chat Now',
-    screen: 'AISupport',
-    colors: [PURPLE, PINK],
-  },
-];
-
-const trending = [
-  { icon: '🩺', label: 'Verify a Doctor',               screen: 'MedicalVerification',  users: '12.4k', rating: '4.9' },
-  { icon: '🎓', label: 'Check School Accreditation',    screen: 'EducationVerification', users: '9.1k',  rating: '4.8' },
-  { icon: '⚖️', label: 'Legal Practitioner Check',      screen: 'LegalVerification',     users: '5.7k',  rating: '4.7' },
-  { icon: '🏢', label: 'Company Compliance Check',      screen: 'Compliance',            users: '3.2k',  rating: '4.6' },
-];
-
-const appCards = [
-  {
-    icon: '🤝', title: 'Talent Marketplace',
-    desc: 'Find verified professionals for hire',
-    rating: '4.8', users: '8.2k',
-    screen: 'CareerHubDirect', tag: 'NEW',
-    colors: ['#059669', '#047857'],
-  },
-  {
-    icon: '📋', title: 'B2B Procurement',
-    desc: 'Connect with trusted suppliers',
-    rating: '4.7', users: '4.5k',
-    screen: 'B2BProcurement', tag: 'NEW',
-    colors: [BLUE, '#1D4ED8'],
-  },
-  {
-    icon: '🏛️', title: 'Grants & Funding',
-    desc: 'DTI · NEF · Government opportunities',
-    rating: '4.9', users: '11k',
-    screen: 'FundingDetail', tag: null,
-    colors: ['#DC2626', '#B91C1C'],
-  },
-];
-
-// ─── Component ──────────────────────────────────────────
 export default function DashboardScreen({ navigation }) {
-  const [search, setSearch] = useState('');
-  const { user } = useAuth();
-  const scrollRef = useRef(null);
+    const { user } = useAuth();
+    const { stats, recommendations, loading } = useDashboardData();
+    const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const getGreeting = () => {
-    const h = new Date().getHours();
-    if (h < 12) return '☀️ Good morning';
-    if (h < 17) return '🌤️ Good afternoon';
-    return '🌙 Good evening';
-  };
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
-  const navigate = (screen) => {
-    if (screen === 'CareerHubDirect') navigation.navigate('Career Hub');
-    else if (screen === 'Support') navigation.navigate('Biz Tools');
-    else navigation.navigate(screen);
-  };
+    const navigate = (item) => {
+        if (item.screen === 'CareerHubDirect') navigation.navigate('Career Hub');
+        else if (item.screen === 'Support') navigation.navigate('Biz Tools');
+        else navigation.navigate(item.screen);
+    };
 
-  const filtered = search.trim()
-    ? [...categories, ...trending].filter(i =>
-        i.label.toLowerCase().includes(search.toLowerCase()))
-    : null;
+    return (
+        <View style={s.container}>
+            <StatusBar barStyle="light-content" backgroundColor="#fff" />
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
+                
+                {/* 🏷️ Top Header (App Store Style) */}
+                <View style={s.topHeader}>
+                    <View style={s.appMetaRow}>
+                        <View style={s.appIconFrame}>
+                            <Text style={{ fontSize: 40 }}>🛡️</Text>
+                        </View>
+                        <View style={s.appNameCol}>
+                            <Text style={s.appName}>Sumbandila Verify</Text>
+                            <View style={s.ratingRow}>
+                                <Text style={s.ratingStars}>⭐⭐⭐⭐⭐</Text>
+                                <Text style={s.ratingText}>4.9 · 50K+ users</Text>
+                            </View>
+                        </View>
+                    </View>
 
-  return (
-    <View style={s.root}>
-      <StatusBar barStyle="light-content" backgroundColor={DARK} />
+                    <View style={s.bulletsRow}>
+                        <View style={s.bulletCol}>
+                            <Text style={s.bullet}>✔️ Verify professionals instantly</Text>
+                            <Text style={s.bullet}>✔️ Trusted national registry</Text>
+                            <Text style={s.bullet}>✔️ Real-time results</Text>
+                        </View>
+                        <TouchableOpacity style={s.openButton} onPress={() => navigation.navigate('VerificationSelection')}>
+                            <Text style={s.openButtonText}>Open ›</Text>
+                        </TouchableOpacity>
+                    </View>
 
-      {/* ── TOP HEADER ── */}
-      <View style={s.header}>
-        <View style={s.headerLeft}>
-          <Text style={s.greeting}>{getGreeting()}</Text>
-          <Text style={s.headerSub}>Discover trusted services</Text>
-        </View>
-        <View style={s.headerRight}>
-          <TouchableOpacity style={s.iconBtn} onPress={() => navigation.navigate('ApplicationTracker')}>
-            <Text style={s.iconEmoji}>🔔</Text>
-            <View style={s.dot} />
-          </TouchableOpacity>
-          <TouchableOpacity style={s.avatarBtn} onPress={() => navigation.navigate('Profile')}>
-            <Text style={s.avatarEmoji}>👤</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+                    {/* Screenshot Mockups Horizontal Scroll */}
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.screenScroll}>
+                        {[1, 2, 3].map((_, idx) => (
+                            <View key={idx} style={s.screenMockup}>
+                                <LinearGradient colors={[BRAND_BLUE + '44', 'transparent']} style={s.mockGradient} />
+                                <View style={s.mockIndicator} />
+                            </View>
+                        ))}
+                    </ScrollView>
+                </View>
 
-      {/* ── SEARCH ── */}
-      <View style={s.searchWrap}>
-        <View style={s.searchBar}>
-          <Text style={s.searchIco}>🔍</Text>
-          <TextInput
-            style={s.searchInput}
-            placeholder="Search doctors, schools, companies..."
-            placeholderTextColor={MUTED}
-            value={search}
-            onChangeText={setSearch}
-            returnKeyType="search"
-          />
-          {search.length > 0 && (
-            <TouchableOpacity onPress={() => setSearch('')}>
-              <Text style={{ color: MUTED, fontSize: 18 }}>✕</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+                {/* 🛡️ Key Features Bar */}
+                <View style={s.keyFeatures}>
+                    <Text style={s.sectionTitle}>Key Features</Text>
+                    <View style={s.featureItem}>
+                        <Text style={s.featureText}>📈 Instant</Text>
+                    </View>
+                    <View style={s.featureItem}>
+                        <Text style={s.featureText}>🛡️ Registry database scan</Text>
+                    </View>
+                    <View style={s.featureItem}>
+                        <Text style={s.featureText}>🕒 Fraud detection alerts</Text>
+                    </View>
+                </View>
 
-      <ScrollView
-        ref={scrollRef}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 48 }}
-      >
-        {/* ── SEARCH RESULTS ── */}
-        {filtered && (
-          <View style={{ paddingHorizontal: 16, marginTop: 8 }}>
-            <Text style={s.sectionLabel}>Results for "{search}"</Text>
-            {filtered.map((item, i) => (
-              <TouchableOpacity key={i} style={s.searchResult} onPress={() => navigate(item.screen)}>
-                <Text style={{ fontSize: 22 }}>{item.icon}</Text>
-                <Text style={s.searchResultText}>{item.label}</Text>
-                <Text style={{ color: MUTED, fontSize: 18 }}>›</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+                {/* 📱 Apps for You */}
+                <View style={s.sectionContainer}>
+                    <Text style={s.sectionTitle}>Apps for You</Text>
+                    <Text style={s.sectionSub}>Explore tools tailored to verification & trust</Text>
+                    
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.horizontalScroll}>
+                        {recommendations.map((app, idx) => (
+                            <TouchableOpacity key={idx} style={s.appCard} onPress={() => navigate(app)}>
+                                <View style={s.appCardIconBox}>
+                                    <Text style={{ fontSize: 32 }}>{app.icon}</Text>
+                                </View>
+                                <Text style={s.appCardTitle}>{app.title}</Text>
+                                <Text style={s.appCardRating}>⭐ 4.{9-idx} ⭐</Text>
+                                <Text style={s.appCardSub}>{app.desc}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                </View>
 
-        {!filtered && <>
+                {/* 🏆 Top Charts */}
+                <View style={s.sectionContainer}>
+                    <Text style={s.sectionTitle}>Top Charts</Text>
+                    <View style={s.chartList}>
+                        {stats.trending?.slice(0, 3).map((item, idx) => (
+                            <TouchableOpacity key={idx} style={s.chartItem} onPress={() => navigate({ screen: item.type === 'medical' ? 'MedicalVerification' : 'EducationVerification' })}>
+                                <Text style={s.chartRank}>{idx + 1}.</Text>
+                                <Text style={s.chartLabel}>{item.label}</Text>
+                                <Text style={s.chartEmoji}>{idx === 0 ? '🏆' : idx === 1 ? '🥈' : '🥉'}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
 
-          {/* ── FEATURED BANNER CAROUSEL ── */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled
-            style={s.featuredScroll}
-            contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
-          >
-            {featured.map((f, i) => (
-              <TouchableOpacity key={i} onPress={() => navigate(f.screen)} activeOpacity={0.92}>
-                <LinearGradient colors={f.colors} style={s.featuredCard} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                  <View style={s.featuredLive}>
-                    <View style={s.liveDot} />
-                    <Text style={s.liveText}>LIVE</Text>
-                  </View>
-                  <Text style={s.featuredTitle}>{f.title}</Text>
-                  <Text style={s.featuredSub}>{f.sub}</Text>
-                  <View style={s.featuredBtn}>
-                    <Text style={s.featuredBtnText}>{f.cta} →</Text>
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                {/* 💡 Suggested for You (AI Section) */}
+                <View style={s.sectionContainer}>
+                    <Text style={s.sectionTitle}>Suggested for You</Text>
+                    <View style={s.suggestionGrid}>
+                        <TouchableOpacity style={s.suggestionCard} onPress={() => navigation.navigate('Career Hub')}>
+                            <View style={s.suggIconBox}>
+                                <Text style={{ fontSize: 24 }}>💼</Text>
+                            </View>
+                            <View>
+                                <Text style={s.suggTitle}>Talent Marketplace</Text>
+                                <Text style={s.suggSub}>Discover verified experts</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={s.suggestionCard} onPress={() => navigation.navigate('Compliance')}>
+                            <View style={[s.suggIconBox, { backgroundColor: BRAND_BLUE + '11' }]}>
+                                <Text style={{ fontSize: 24 }}>🛡️</Text>
+                            </View>
+                            <View>
+                                <Text style={s.suggTitle}>Compliance Portal</Text>
+                                <Text style={s.suggSub}>Institutional checks</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
 
-          {/* ── CATEGORY ICON GRID ── */}
-          <View style={s.section}>
-            <View style={s.sectionRow}>
-              <Text style={s.sectionLabel}>CATEGORIES</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('VerificationSelection')}>
-                <Text style={s.seeAll}>See all ›</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={s.grid}>
-              {categories.map((cat, i) => (
-                <TouchableOpacity key={i} style={s.gridItem} onPress={() => navigate(cat.screen)} activeOpacity={0.8}>
-                  <View style={[s.gridIconWrap, { backgroundColor: cat.color + '22' }]}>
-                    <Text style={s.gridIcon}>{cat.icon}</Text>
-                  </View>
-                  <Text style={s.gridLabel}>{cat.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          {/* ── TRENDING NOW ── */}
-          <View style={s.section}>
-            <View style={s.sectionRow}>
-              <Text style={s.sectionLabel}>🔥 TRENDING NOW</Text>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -16, paddingHorizontal: 16 }}>
-              {trending.map((t, i) => (
-                <TouchableOpacity key={i} style={s.trendCard} onPress={() => navigate(t.screen)} activeOpacity={0.85}>
-                  <Text style={s.trendIcon}>{t.icon}</Text>
-                  <Text style={s.trendLabel}>{t.label}</Text>
-                  <View style={s.trendMeta}>
-                    <Text style={s.trendRating}>⭐ {t.rating}</Text>
-                    <Text style={s.trendUsers}>{t.users} users</Text>
-                  </View>
-                  <View style={s.trendOpenBtn}>
-                    <Text style={s.trendOpenText}>Open →</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
             </ScrollView>
-          </View>
 
-          {/* ── APP CARDS ── */}
-          <View style={s.section}>
-            <Text style={s.sectionLabel}>✨ FEATURED APPS</Text>
-            {appCards.map((app, i) => (
-              <TouchableOpacity key={i} style={s.appCard} onPress={() => navigate(app.screen)} activeOpacity={0.88}>
-                <LinearGradient colors={app.colors} style={s.appIconGrad}>
-                  <Text style={{ fontSize: 26 }}>{app.icon}</Text>
-                </LinearGradient>
-                <View style={s.appInfo}>
-                  <View style={s.appTitleRow}>
-                    <Text style={s.appTitle}>{app.title}</Text>
-                    {app.tag && <View style={s.appTag}><Text style={s.appTagText}>{app.tag}</Text></View>}
-                  </View>
-                  <Text style={s.appDesc}>{app.desc}</Text>
-                  <View style={s.appMeta}>
-                    <Text style={s.appRating}>⭐ {app.rating}</Text>
-                    <Text style={s.appUsers}> · {app.users} users</Text>
-                  </View>
-                </View>
-                <TouchableOpacity style={s.openBtn} onPress={() => navigate(app.screen)}>
-                  <Text style={s.openBtnText}>Open</Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* ── TRUST BADGES ── */}
-          <View style={[s.section, s.trustRow]}>
-            {[
-              { icon: '🏛️', label: 'Govt Verified' },
-              { icon: '🔒', label: 'Secure 256-bit' },
-              { icon: '📜', label: 'POPIA Compliant' },
-              { icon: '🟢', label: 'Live Status' },
-            ].map((b, i) => (
-              <View key={i} style={s.trustBadge}>
-                <Text style={{ fontSize: 20 }}>{b.icon}</Text>
-                <Text style={s.trustLabel}>{b.label}</Text>
-              </View>
-            ))}
-          </View>
-
-          {/* ── AI ASSISTANT ── */}
-          <View style={{ paddingHorizontal: 16 }}>
-            <TouchableOpacity onPress={() => navigation.navigate('AISupport')} activeOpacity={0.9}>
-              <LinearGradient colors={[PURPLE, PINK]} style={s.aiCard} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-                <View style={s.aiLeft}>
-                  <Text style={{ fontSize: 28 }}>🤖</Text>
-                  <View style={{ marginLeft: 14 }}>
-                    <Text style={s.aiTitle}>Sumbandila AI</Text>
-                    <Text style={s.aiSub}>Ask anything about verifications</Text>
-                  </View>
-                </View>
-                <View style={s.aiChip}>
-                  <Text style={s.aiChipText}>Chat →</Text>
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-
-        </>}
-      </ScrollView>
-    </View>
-  );
+            {/* 🏠 Bottom Navigation Mockup */}
+            <View style={s.bottomNav}>
+                 <TouchableOpacity style={s.navItem}>
+                    <Text style={s.navIcon}>🏠</Text>
+                    <Text style={s.navLabel}>Home</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity style={s.navItem} onPress={() => navigation.navigate('VerificationSelection')}>
+                    <Text style={s.navIcon}>📊</Text>
+                    <Text style={s.navLabel}>Tools</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity style={s.navItem} onPress={() => navigation.navigate('AISupport')}>
+                    <Text style={s.navIcon}>🔍</Text>
+                    <Text style={s.navLabel}>Search</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity style={s.navItem} onPress={() => navigation.navigate('Profile')}>
+                    <Text style={s.navIcon}>👤</Text>
+                    <Text style={s.navLabel}>Profile</Text>
+                 </TouchableOpacity>
+            </View>
+        </View>
+    );
 }
 
-// ─── Styles ─────────────────────────────────────────────
 const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: DARK },
-
-  // Header
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingTop: 56, paddingHorizontal: 16, paddingBottom: 12,
-  },
-  headerLeft: {},
-  greeting: { color: TEXT, fontSize: 22, fontWeight: '800', letterSpacing: -0.5 },
-  headerSub: { color: MUTED, fontSize: 13, fontWeight: '500', marginTop: 2 },
-  headerRight: { flexDirection: 'row', gap: 10, alignItems: 'center' },
-  iconBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: CARD, justifyContent: 'center', alignItems: 'center' },
-  iconEmoji: { fontSize: 18 },
-  dot: { position: 'absolute', top: 5, right: 5, width: 8, height: 8, borderRadius: 4, backgroundColor: '#EF4444', borderWidth: 1.5, borderColor: DARK },
-  avatarBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: BLUE + '33', justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: BLUE },
-  avatarEmoji: { fontSize: 18 },
-
-  // Search
-  searchWrap: { paddingHorizontal: 16, paddingBottom: 16 },
-  searchBar: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: CARD, borderRadius: 30,
-    paddingHorizontal: 18, height: 50,
-    borderWidth: 1, borderColor: BORDER,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 5,
-  },
-  searchIco: { fontSize: 16, marginRight: 10 },
-  searchInput: { flex: 1, color: TEXT, fontSize: 14, fontWeight: '500' },
-
-  // Search results
-  searchResult: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: CARD, borderRadius: 14, padding: 14, marginBottom: 8,
-  },
-  searchResultText: { flex: 1, color: TEXT, fontSize: 15, fontWeight: '600' },
-
-  // Featured
-  featuredScroll: { marginBottom: 28 },
-  featuredCard: {
-    width: width - 56, borderRadius: 24, padding: 24,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 20, elevation: 10,
-  },
-  featuredLive: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
-  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#4ADE80' },
-  liveText: { color: '#4ADE80', fontSize: 11, fontWeight: '800', letterSpacing: 1.5 },
-  featuredTitle: { color: '#fff', fontSize: 22, fontWeight: '900', letterSpacing: -0.5, marginBottom: 6 },
-  featuredSub: { color: 'rgba(255,255,255,0.75)', fontSize: 14, fontWeight: '500', marginBottom: 20 },
-  featuredBtn: { alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 18, paddingVertical: 10, borderRadius: 20 },
-  featuredBtnText: { color: '#fff', fontWeight: '800', fontSize: 14 },
-
-  // Sections
-  section: { paddingHorizontal: 16, marginBottom: 32 },
-  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  sectionLabel: { color: MUTED, fontSize: 12, fontWeight: '900', letterSpacing: 1.5, marginBottom: 14 },
-  seeAll: { color: BLUE, fontSize: 13, fontWeight: '700' },
-
-  // Category Grid
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  gridItem: { width: (width - 32 - 30) / 4, alignItems: 'center' },
-  gridIconWrap: { width: 56, height: 56, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
-  gridIcon: { fontSize: 26 },
-  gridLabel: { color: TEXT, fontSize: 11, fontWeight: '700', textAlign: 'center' },
-
-  // Trending
-  trendCard: {
-    backgroundColor: CARD, borderRadius: 20, padding: 18,
-    marginRight: 12, width: 190,
-    borderWidth: 1, borderColor: BORDER,
-  },
-  trendIcon: { fontSize: 30, marginBottom: 10 },
-  trendLabel: { color: TEXT, fontSize: 13, fontWeight: '800', marginBottom: 8, lineHeight: 18 },
-  trendMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
-  trendRating: { color: AMBER, fontSize: 12, fontWeight: '700' },
-  trendUsers: { color: MUTED, fontSize: 11, fontWeight: '600' },
-  trendOpenBtn: { backgroundColor: BLUE + '22', borderRadius: 10, paddingVertical: 8, alignItems: 'center' },
-  trendOpenText: { color: BLUE, fontSize: 13, fontWeight: '800' },
-
-  // App Cards
-  appCard: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: CARD, borderRadius: 20, padding: 16,
-    marginBottom: 12, borderWidth: 1, borderColor: BORDER,
-  },
-  appIconGrad: { width: 58, height: 58, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginRight: 14 },
-  appInfo: { flex: 1 },
-  appTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
-  appTitle: { color: TEXT, fontSize: 15, fontWeight: '800' },
-  appTag: { backgroundColor: GREEN + '22', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6 },
-  appTagText: { color: GREEN, fontSize: 9, fontWeight: '900', letterSpacing: 0.5 },
-  appDesc: { color: MUTED, fontSize: 12, fontWeight: '500', marginBottom: 6 },
-  appMeta: { flexDirection: 'row', alignItems: 'center' },
-  appRating: { color: AMBER, fontSize: 12, fontWeight: '700' },
-  appUsers: { color: MUTED, fontSize: 11 },
-  openBtn: { backgroundColor: BLUE, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
-  openBtnText: { color: '#fff', fontSize: 13, fontWeight: '800' },
-
-  // Trust Badges
-  trustRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between' },
-  trustBadge: {
-    width: (width - 52) / 4, backgroundColor: CARD,
-    borderRadius: 14, padding: 12, alignItems: 'center',
-    borderWidth: 1, borderColor: BORDER,
-  },
-  trustLabel: { color: MUTED, fontSize: 9, fontWeight: '700', marginTop: 5, textAlign: 'center' },
-
-  // AI
-  aiCard: { borderRadius: 24, padding: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  aiLeft: { flexDirection: 'row', alignItems: 'center' },
-  aiTitle: { color: '#fff', fontSize: 16, fontWeight: '800' },
-  aiSub: { color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 2 },
-  aiChip: { backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20 },
-  aiChipText: { color: '#fff', fontWeight: '800', fontSize: 14 },
+    container: { flex: 1, backgroundColor: '#fff' },
+    topHeader: { paddingHorizontal: 20, paddingTop: 40, borderBottomWidth: 1, borderBottomColor: '#eee' },
+    appMetaRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+    appIconFrame: { width: 80, height: 80, borderRadius: 20, backgroundColor: '#f0f4ff', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#e1e8ff' },
+    appNameCol: { marginLeft: 15 },
+    appName: { fontSize: 24, fontWeight: '900', color: '#1a1a1a' },
+    ratingRow: { marginTop: 5 },
+    ratingStars: { color: '#fbbf24', fontSize: 14 },
+    ratingText: { color: '#666', fontSize: 13, fontWeight: '500', marginTop: 2 },
+    bulletsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 25 },
+    bulletCol: { gap: 5 },
+    bullet: { color: BRAND_BLUE, fontWeight: '900', fontSize: 13 },
+    openButton: { backgroundColor: BRAND_BLUE, paddingHorizontal: 25, paddingVertical: 10, borderRadius: 20, alignSelf: 'center' },
+    openButtonText: { color: '#fff', fontWeight: '900', fontSize: 16 },
+    screenScroll: { marginHorizontal: -20, paddingHorizontal: 20, marginBottom: 30 },
+    screenMockup: { width: 140, height: 180, borderRadius: 15, backgroundColor: '#f5f5f5', marginRight: 15, overflow: 'hidden', borderWidth: 1, borderColor: '#eee' },
+    mockGradient: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+    mockIndicator: { position: 'absolute', top: 10, right: 10, width: 25, height: 25, borderRadius: 12, backgroundColor: BRAND_BLUE + '22' },
+    keyFeatures: { paddingHorizontal: 20, paddingVertical: 25, borderBottomWidth: 1, borderBottomColor: '#eee' },
+    sectionTitle: { fontSize: 18, fontWeight: '900', color: '#1a1a1a', marginBottom: 8 },
+    featureItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#f9f9f9' },
+    featureText: { fontSize: 14, fontWeight: '700', color: '#444' },
+    sectionContainer: { marginTop: 30, paddingHorizontal: 20 },
+    sectionSub: { fontSize: 13, color: '#666', marginBottom: 20, fontWeight: '500' },
+    horizontalScroll: { marginHorizontal: -20, paddingHorizontal: 20 },
+    appCard: { width: 160, borderRadius: 20, backgroundColor: '#fff', padding: 15, marginRight: 15, borderElevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 5, marginBottom: 10, borderWidth: 1, borderColor: '#f0f0f0' },
+    appCardIconBox: { width: 130, height: 90, borderRadius: 15, backgroundColor: '#f8faff', justifyContent: 'center', alignItems: 'center', marginBottom: 12, overflow: 'hidden' },
+    appCardTitle: { fontSize: 15, fontWeight: '900', color: '#1a1a1a' },
+    appCardRating: { fontSize: 11, color: '#fbbf24', marginVertical: 4, fontWeight: '800' },
+    appCardSub: { fontSize: 11, color: '#666', fontWeight: '500' },
+    chartList: { marginTop: 10 },
+    chartItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#f5f5f5' },
+    chartRank: { fontSize: 18, fontWeight: '900', color: '#333', width: 30 },
+    chartLabel: { flex: 1, fontSize: 16, fontWeight: '700', color: '#1a1a1a' },
+    chartEmoji: { fontSize: 20 },
+    suggestionGrid: { flexDirection: 'column', gap: 12, marginTop: 15 },
+    suggestionCard: { flexDirection: 'row', alignItems: 'center', padding: 15, borderRadius: 15, backgroundColor: '#f8faff', borderWidth: 1, borderColor: '#e1e8ff' },
+    suggIconBox: { width: 52, height: 52, borderRadius: 12, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', marginRight: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5 },
+    suggTitle: { fontSize: 16, fontWeight: '900', color: '#1a1a1a' },
+    suggSub: { fontSize: 13, color: '#666', marginTop: 2 },
+    bottomNav: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 75, backgroundColor: 'rgba(255,255,255,0.95)', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', borderTopWidth: 1, borderTopColor: '#f1f1f1', paddingBottom: 15 },
+    navItem: { alignItems: 'center' },
+    navIcon: { fontSize: 22, color: BRAND_BLUE },
+    navLabel: { fontSize: 10, fontWeight: '900', color: '#666', marginTop: 4 },
 });
