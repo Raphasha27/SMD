@@ -7,6 +7,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 // 🧪 Web-safe Lottie import
 const LottieView = Platform.OS === 'web' ? View : require('lottie-react-native');
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../hooks/useNotifications';
+import { supabase } from '../config/supabase';
 import { useDashboardData } from '../hooks/useDashboardData';
 
 const { width } = Dimensions.get('window');
@@ -20,6 +22,25 @@ const BRAND_BLUE = '#2563EB';
 
 export default function DashboardScreen({ navigation }) {
     const { user } = useAuth();
+  const { expoPushToken, notification } = useNotifications();
+
+  // 🏆 Phase 5: Register Push Token to Profile
+  useEffect(() => {
+    if (expoPushToken && user?.id) {
+       syncPushToken();
+    }
+  }, [expoPushToken]);
+
+  const syncPushToken = async () => {
+    try {
+      await supabase
+        .from('profiles')
+        .update({ push_token: expoPushToken })
+        .eq('id', user.id);
+    } catch (e) {
+      console.warn('📡 Push Sync failed:', e.message);
+    }
+  };
     const { stats, recommendations, loading } = useDashboardData();
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -55,6 +76,13 @@ export default function DashboardScreen({ navigation }) {
                                 <Text style={s.ratingText}>4.9 · 50K+ users</Text>
                             </View>
                         </View>
+                        <TouchableOpacity 
+                          style={s.privacyBadge} 
+                          onPress={() => navigation.navigate('DataPrivacy')}
+                        >
+                          <Text style={s.privacyEmoji}>🇿🇦</Text>
+                          <Text style={s.privacyText}>POPIA</Text>
+                        </TouchableOpacity>
                     </View>
 
                     <View style={s.bulletsRow}>
@@ -194,6 +222,9 @@ const s = StyleSheet.create({
     ratingRow: { marginTop: 5 },
     ratingStars: { color: '#fbbf24', fontSize: 14 },
     ratingText: { color: '#666', fontSize: 13, fontWeight: '500', marginTop: 2 },
+    privacyBadge: { marginLeft: 'auto', backgroundColor: '#F1F5F9', padding: 10, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0' },
+    privacyEmoji: { fontSize: 16 },
+    privacyText: { fontSize: 8, fontWeight: '900', color: BRAND_BLUE, marginTop: 2 },
     bulletsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 25 },
     bulletCol: { gap: 5 },
     bullet: { color: BRAND_BLUE, fontWeight: '900', fontSize: 13 },

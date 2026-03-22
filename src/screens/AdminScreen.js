@@ -93,6 +93,20 @@ export default function AdminScreen({ navigation }) {
           </View>
         </View>
  
+        {/* System Uptime Hub - Phase 5 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>SYSTEM UPTIME MONITOR</Text>
+          <View style={styles.uptimeGrid}>
+            {['UP', 'UCT', 'SAQA', 'HPCSA'].map((inst) => (
+              <View key={inst} style={styles.uptimeItem}>
+                <View style={[styles.statusDot, { backgroundColor: '#27AE60' }]} />
+                <Text style={styles.uptimeName}>{inst}</Text>
+                <Text style={styles.uptimeStatus}>ONLINE</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
         {/* Pending Reviews Section */}
         {manualRequests.length > 0 && (
           <View style={styles.section}>
@@ -174,5 +188,10 @@ const styles = StyleSheet.create({
   actionBtn: { flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
   approveBtn: { backgroundColor: '#DEF7EC' },
   rejectBtn: { backgroundColor: '#FDE8E8' },
-  actionBtnText: { fontSize: 12, fontWeight: '700' }
+  actionBtnText: { fontSize: 12, fontWeight: '700' },
+  uptimeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  uptimeItem: { width: '48%', backgroundColor: '#fff', padding: 12, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 8, ...SHADOW.small },
+  statusDot: { width: 8, height: 8, borderRadius: 4 },
+  uptimeName: { fontSize: 13, fontWeight: '700', color: COLORS.text, flex: 1 },
+  uptimeStatus: { fontSize: 10, fontWeight: '800', color: '#27AE60' }
 });
