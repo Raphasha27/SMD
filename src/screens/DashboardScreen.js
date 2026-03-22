@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  Dimensions, StatusBar, Animated, Image,
+  Dimensions, StatusBar, Animated, Image, Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import LottieView from 'lottie-react-native';
+// 🧪 Web-safe Lottie import
+const LottieView = Platform.OS === 'web' ? View : require('lottie-react-native');
 import { useAuth } from '../context/AuthContext';
 import { useDashboardData } from '../hooks/useDashboardData';
 
@@ -101,7 +102,15 @@ export default function DashboardScreen({ navigation }) {
                         {recommendations.map((app, idx) => (
                             <TouchableOpacity key={idx} style={s.appCard} onPress={() => navigate(app)}>
                                 <View style={s.appCardIconBox}>
-                                    <Text style={{ fontSize: 32 }}>{app.icon}</Text>
+                                    {Platform.OS !== 'web' && (
+                                        <LottieView 
+                                            source={{ uri: 'https://assets2.lottiefiles.com/packages/lf20_u4j3t0v4.json' }}
+                                            autoPlay 
+                                            loop 
+                                            style={s.lottie} 
+                                        />
+                                    )}
+                                    <Text style={{ fontSize: 32, position: 'absolute' }}>{app.icon}</Text>
                                 </View>
                                 <Text style={s.appCardTitle}>{app.title}</Text>
                                 <Text style={s.appCardRating}>⭐ 4.{9-idx} ⭐</Text>
@@ -220,4 +229,5 @@ const s = StyleSheet.create({
     navItem: { alignItems: 'center' },
     navIcon: { fontSize: 22, color: BRAND_BLUE },
     navLabel: { fontSize: 10, fontWeight: '900', color: '#666', marginTop: 4 },
+    lottie: { width: 140, height: 140, position: 'absolute' },
 });

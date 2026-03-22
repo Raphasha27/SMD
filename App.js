@@ -19,6 +19,7 @@ import LegalVerificationScreen     from './src/screens/LegalVerificationScreen';
 import VerificationResultScreen    from './src/screens/VerificationResultScreen';
 import DocumentUploadScreen       from './src/screens/DocumentUploadScreen';
 import SubscriptionScreen from './src/screens/SubscriptionScreen';
+import DataPrivacyScreen         from './src/screens/DataPrivacyScreen';
 
 // Support & Funding
 import SupportHubScreen         from './src/screens/SupportHubScreen';
@@ -59,6 +60,7 @@ export default function App() {
         <Stack.Screen name="VerificationResult"    component={VerificationResultScreen} />
         <Stack.Screen name="DocumentUpload"        component={DocumentUploadScreen} />
         <Stack.Screen name="Subscription"          component={SubscriptionScreen} />
+        <Stack.Screen name="DataPrivacy"           component={DataPrivacyScreen} />
 
         {/* Support & Funding */}
         <Stack.Screen name="Support"            component={SupportHubScreen} />

@@ -250,6 +250,38 @@ app.post('/payment/subscribe', authenticateJWT, async (req, res) => {
 });
 
 /**
+ * 🇿🇦 POPIA: Data Deletion / Right to be Forgotten
+ */
+app.post('/privacy/delete', authenticateJWT, async (req, res) => {
+    const userId = req.user.id;
+    if (!supabase) return res.status(503).json({ error: "Supabase not connected" });
+
+    try {
+        // Instead of hard deleting verifications (which might be needed for legal audit), 
+        // we "mask" the identity data and delete the profile.
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', userId);
+
+        if (profileError) throw profileError;
+
+        // Mask PII in verification logs
+        await supabase
+            .from('verifications')
+            .update({ 
+                registration_number: "POPIA_MASKED",
+                payload: { status: "DELETED", info: "Anonymized by User Request" }
+            })
+            .eq('user_id', userId);
+
+        res.json({ success: true, message: "Your account and identity data have been anonymized." });
+    } catch (error) {
+        res.status(500).json({ error: `Deletion request failed: ${error.message}` });
+    }
+});
+
+/**
  * Admin System Stats (Restricted)
  */
 app.get('/admin/stats', authenticateJWT, async (req, res) => {
@@ -267,6 +299,12 @@ app.get('/admin/stats', authenticateJWT, async (req, res) => {
         if (!profile?.is_admin) {
             return res.status(403).json({ error: "Access Denied: Admins Only" });
         }
+
+        res.json({ success: true, message: "Admin authenticated", role: "ADMIN" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 /**
  * 📊 Public Dashboard Stats (no auth required)
