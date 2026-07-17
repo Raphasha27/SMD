@@ -1,32 +1,33 @@
-<div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,100:00ffcc&height=200&section=header&text=SMD&fontSize=50&fontColor=ffffff&fontAlignY=40&desc=Private%20Startup%20Architecture&descAlignY=65" width="100%"/>
+# Sumbandila Municipal Dashboard (SMD)
 
-  [![Status](https://img.shields.io/badge/Status-Offline%20for%20Upgrades-ff4b4b?style=for-the-badge)](#)
-  [![Visibility](https://img.shields.io/badge/Visibility-Private%20Core-8957e5?style=for-the-badge)](#)
-</div>
+Municipal infrastructure monitoring dashboard with a React Native mobile app and FastAPI Python backend.
 
-## ?? Overview
-Welcome to the internal private repository for **SMD**. 
+## Tech Stack
 
-> **Note on Deployment:** Any previous live deployments (e.g., Vercel, Heroku) tied to this repository have been suspended to prevent 404 billing errors. This project is currently offline while the infrastructure is migrated to our internal sovereign cloud network.
+- **Mobile:** React Native (Expo), React Navigation, Firebase
+- **Backend:** FastAPI (Python), Pydantic, Uvicorn
+- **API Layer:** Express.js (Node.js) with data adapters
+- **Web:** HTML dashboard frontend
 
-## ?? Key Architectural Features
-- **streamlined Core:** Built for scalability and autonomous operations.
-- **Modern UI/UX:** Features advanced dashboard logic and secure routing.
-- **Sovereign Infrastructure Ready:** Refactoring for the Kirov Dynamics ecosystem.
+## Features
 
-## ??? Local Development Setup
-To run this project locally without relying on external cloud providers:
+- Municipal infrastructure issue reporting and tracking
+- Real-time data ingestion via Express.js adapters
+- Integration with SAQA, HPCSA, and university data sources
+- Cross-platform mobile and web access
+- Pilot launch automation scripts
 
-`ash
+## Getting Started
+
+```bash
 git clone https://github.com/Raphasha27/SMD.git
 cd SMD
-# Install dependencies according to package manager (npm/pip/cargo)
-# Start the local development server
-`
+# Backend
+pip install -r requirements.txt && uvicorn main:app --reload
+# Mobile
+npm install && npx expo start
+```
 
-## ?? Roadmap
-- [x] Clear dead Vercel/Heroku links to prevent 404 routing errors.
-- [ ] Migrate CI/CD to local GitHub Actions.
-- [ ] Deploy isolated -lab environment.
+## License
 
+MIT
